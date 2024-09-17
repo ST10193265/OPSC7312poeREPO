@@ -95,6 +95,7 @@ class ClientSettingsFragment : Fragment() {
         // Handle Cancel Button click (clear input or navigate back)
         btnCancel.setOnClickListener {
             clearFields()
+            findNavController().navigate(R.id.action_nav_settings_client_to_nav_menu_client)
         }
 
         return view
@@ -142,9 +143,9 @@ class ClientSettingsFragment : Fragment() {
 
     // Function to clear the fields
     private fun clearFields() {
-        spinnerLanguage.setSelection(0)
-        spinnerDistanceUnits.setSelection(0)
-        spinnerDistanceRadius.setSelection(0)
+        spinnerLanguage.setSelection(-1)
+        spinnerDistanceUnits.setSelection(-1)
+        spinnerDistanceRadius.setSelection(-1)
         etEmail.text.clear()
         etPhone.text.clear()
     }

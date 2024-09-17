@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">OPSC7312 PoE Part 2 - Code</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -10,13 +11,11 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
-    <string name="change_language">Change Language:</string>
-    <string name="settings" translatable="false">Settings</string>
-    <string name="change_distance_units">Change Distance Units:</string>
-    <string name="change_radius">Change Distance Radius (units):</string>
-    <string name="change_email">Change Email:</string>
-    <string name="change_phone">Change Phone Number:</string>
-    <string name="save">Save</string>
-    <string name="cancel">Cancel</string>
-
+    <string name="change_language">Verander Taal:</string>
+    <string name="change_distance_units">Verander Afstandseenhede:</string>
+    <string name="change_radius">Verander Afstandradius (eenhede):</string>
+    <string name="change_email">Verander E-pos:</string>
+    <string name="change_phone">Verander Telefoonnommer:</string>
+    <string name="save">Stoor</string>
+    <string name="cancel">Kanselleer</string>
 </resources>

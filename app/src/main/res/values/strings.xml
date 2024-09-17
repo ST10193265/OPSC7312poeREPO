@@ -11,6 +11,7 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="change_language">Change Language:</string>
+    <string name="change_address">Change Address:</string>
     <string name="settings" translatable="false">Settings</string>
     <string name="change_distance_units">Change Distance Units:</string>
     <string name="change_radius">Change Distance Radius (units):</string>

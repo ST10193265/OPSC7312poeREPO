@@ -9,13 +9,18 @@
         android:id="@+id/nav_home"
         android:name="com.example.poe2.ui.home.HomeFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_nav_home_to_nav_register_client"
+            app:destination="@id/nav_register_client" />
+    </fragment>
+
 
     <fragment
-        android:id="@+id/nav_register"
-        android:name="com.example.poe2.ui.register.RegisterFragment"
-        android:label="Register"
-        tools:layout="@layout/fragment_register" />
+        android:id="@+id/nav_register_client"
+        android:name="com.example.poe2.ui.register_client.RegisterClientFragment"
+        android:label="Register - Client"
+        tools:layout="@layout/fragment_register_client" />
 
     <fragment
         android:id="@+id/nav_menu_client"

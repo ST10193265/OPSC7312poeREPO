@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment">
 
+    <ImageView
+        android:id="@+id/iLogo"
+        android:layout_width="197dp"
+        android:layout_height="181dp"
+        android:src="@drawable/icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.029" />
+
     <TextView
         android:id="@+id/txtName"
         android:layout_width="174dp"
@@ -50,17 +62,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.489" />
 
-    <Spinner
-        android:id="@+id/sLoginAs"
-        android:layout_width="295dp"
-        android:layout_height="65dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.586"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.573" />
-
     <TextView
         android:id="@+id/txtRegisterAs"
         android:layout_width="165dp"
@@ -74,28 +75,65 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.697" />
 
-    <Spinner
-        android:id="@+id/sRegisterAS"
-        android:layout_width="308dp"
-        android:layout_height="66dp"
+    <Button
+        android:id="@+id/btnRegister_Dentist"
+        android:layout_width="158dp"
+        android:layout_height="57dp"
+        android:backgroundTint="@color/lightblue"
+        android:text="Dentist"
+        android:textColor="@color/black"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.533"
+        app:layout_constraintHorizontal_bias="0.861"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.786" />
+        app:layout_constraintVertical_bias="0.566" />
 
-    <ImageView
-        android:id="@+id/iLogo"
-        android:layout_width="197dp"
-        android:layout_height="181dp"
-        android:src="@drawable/icon"
+    <Button
+        android:id="@+id/btnLogin_Dentist"
+        android:layout_width="158dp"
+        android:layout_height="57dp"
+        android:backgroundTint="@color/lightblue"
+        android:text="Dentist"
+        android:textColor="@color/black"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.861"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.029" />
+        app:layout_constraintVertical_bias="0.792" />
+
+    <Button
+        android:id="@+id/btnRegister_Client"
+        android:layout_width="158dp"
+        android:layout_height="57dp"
+        android:backgroundTint="@color/lightblue"
+        android:text="Client"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.134"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.566" />
+
+    <Button
+        android:id="@+id/btnLogin_Client"
+        android:layout_width="158dp"
+        android:layout_height="57dp"
+        android:backgroundTint="@color/lightblue"
+        android:text="Client"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.154"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.792" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

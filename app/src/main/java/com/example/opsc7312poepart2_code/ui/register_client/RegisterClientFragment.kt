@@ -8,10 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.poe2.R
 
-class registerClientFragment : Fragment() {
+class RegisterClientFragment : Fragment() {
 
     companion object {
-        fun newInstance() = registerClientFragment()
+        fun newInstance() = RegisterClientFragment()
     }
 
     private val viewModel: RegisterClientViewModel by viewModels()

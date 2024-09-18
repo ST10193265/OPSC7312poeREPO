@@ -7,7 +7,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.poe2.ui.home.HomeViewModel
+import androidx.navigation.fragment.findNavController
+import com.example.poe2.R
 import com.example.poe2.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
@@ -30,6 +31,12 @@ class HomeFragment : Fragment() {
         val root: View = binding.root
 
         val textView: TextView = binding.txtWelcomeMsg
+
+        // Add click listener to the Register Client button
+        binding.btnRegisterClient.setOnClickListener {
+            // Navigate to the Client Register fragment
+            findNavController().navigate(R.id.action_nav_home_to_nav_register_client)
+        }
 
         return root
     }

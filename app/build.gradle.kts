@@ -40,43 +40,45 @@ android {
     buildFeatures {
         viewBinding = true
     }
-}
+    dependencies {
+        // AndroidX and Material Components
+        implementation(libs.androidx.core.ktx.v1101)
+        implementation(libs.androidx.appcompat)
+        implementation(libs.material.v190)
+        implementation(libs.androidx.constraintlayout)
+        implementation(libs.androidx.lifecycle.livedata.ktx)
+        implementation(libs.androidx.lifecycle.viewmodel.ktx)
+        implementation(libs.androidx.navigation.fragment.ktx)
+        implementation(libs.androidx.navigation.ui.ktx)
+        implementation(libs.androidx.legacy.support.v4)
+        implementation(libs.androidx.fragment.ktx)
 
+        // Firebase
+        implementation(platform(libs.firebase.bom)) // Use the latest Firebase BoM
+        implementation(libs.firebase.auth.ktx)
+        implementation(libs.firebase.database.ktx)
+
+        // Google Play Services
+        implementation("com.google.android.gms:play-services-maps:18.1.0")
+        implementation("com.google.android.gms:play-services-places:17.0.0") // Use version 17.0.0
+        implementation("com.google.android.gms:play-services-location:18.0.0") // Use version 18.0.0
+
+        // Networking
+        implementation(libs.okhttp)
+        implementation(libs.okhttp.v500alpha8)
+
+        // Utilities
+        implementation(libs.android.maps.utils)
+
+        // Testing
+        testImplementation(libs.junit)
+        androidTestImplementation(libs.androidx.junit.v115)
+        androidTestImplementation(libs.androidx.espresso.core.v351)
+    }
+}
 dependencies {
-    // AndroidX and Material Components
-    implementation(libs.androidx.core.ktx.v1101)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material.v190)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
-    implementation(libs.androidx.legacy.support.v4)
-    implementation(libs.androidx.fragment.ktx)
-
-    // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:32.2.0")) // Use the latest Firebase BoM
-    implementation(libs.firebase.auth.ktx)
-    implementation(libs.firebase.database.ktx)
-
-    // Google Play Services
-    implementation(libs.play.services.maps.v1810)
-    implementation(libs.play.services.places.v1700)
-    implementation(libs.play.services.location.v2130)
-
-    // Networking
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.v500alpha8)
-
-    // Utilities
-    implementation(libs.android.maps.utils)
     implementation(libs.places)
-    implementation(libs.androidx.fragment)
-
-    // Testing
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit.v115)
-    androidTestImplementation(libs.androidx.espresso.core.v351)
 }
+
+
 

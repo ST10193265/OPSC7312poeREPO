@@ -1,8 +1,9 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-}
 
+    id("com.google.gms.google-services")
+}
 
 android {
     namespace = "com.example.poe2"
@@ -50,7 +51,16 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.fragment.ktx)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.database.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit.v115)
     androidTestImplementation(libs.androidx.espresso.core.v351)
+
+    // Add Firebase BoM to manage Firebase versions
+    implementation(platform("com.google.firebase:firebase-bom:32.2.0"))
+    // Firebase Database dependency
+    implementation("com.google.firebase:firebase-database")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
 }

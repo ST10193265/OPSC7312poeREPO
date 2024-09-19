@@ -209,7 +209,21 @@
             app:layout_constraintHorizontal_bias="0.833"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.841" />
+            app:layout_constraintVertical_bias="0.841"
+            android:inputType="textPassword" />
+
+        <ImageButton
+            android:id="@+id/ibtnVisiblePassword"
+            android:layout_width="44dp"
+            android:layout_height="43dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/visible_icon"
+            app:layout_constraintBottom_toBottomOf="@id/etxtPassword"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@id/etxtPassword"
+            app:layout_constraintTop_toTopOf="@id/etxtPassword"
+            app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

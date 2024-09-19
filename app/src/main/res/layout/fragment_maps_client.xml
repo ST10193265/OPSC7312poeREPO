@@ -6,43 +6,46 @@
     android:layout_height="match_parent"
     tools:context=".ui.maps_client.MapsClientFragment">
 
+    <!-- This fragment is for displaying the Google Map -->
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <ImageButton
             android:id="@+id/ibtnHome"
-            android:layout_width="82dp"
-            android:layout_height="73dp"
+            android:layout_width="74dp"
+            android:layout_height="63dp"
             android:backgroundTint="@color/lightblue"
             android:scaleType="fitCenter"
             android:src="@drawable/home"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.893"
+            app:layout_constraintHorizontal_bias="0.979"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.252" />
+            app:layout_constraintVertical_bias="0.118" />
 
         <TextView
             android:id="@+id/txtAppName"
-            android:layout_width="174dp"
-            android:layout_height="98dp"
+            android:layout_width="126dp"
+            android:layout_height="69dp"
             android:text="Dentist Dairy"
             android:textAlignment="center"
-            android:textSize="35sp"
+            android:textColor="@android:color/black"
+            android:textSize="26sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.852"
+            app:layout_constraintHorizontal_bias="0.392"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.075" />
+            app:layout_constraintVertical_bias="0.027" />
 
         <ImageView
             android:id="@+id/iLogo"
-            android:layout_width="197dp"
-            android:layout_height="181dp"
+            android:layout_width="136dp"
+            android:layout_height="98dp"
             android:src="@drawable/icon"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -51,14 +54,56 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.029" />
 
+        <AutoCompleteTextView
+            android:id="@+id/autoCompleteTextView"
+            android:layout_width="370dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="180dp"
+            android:queryHint="Search for address"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btnGoNow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="56dp"
+            android:backgroundTint="@color/lightblue"
+            android:text="Go Now"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.47"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
         <TextView
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Maps - Client"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/search_dentist"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/ibtnHome" />
+
+        <!-- Correct Fragment tag -->
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="338dp"
+            android:layout_height="420dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.47"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnGoNow" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </FrameLayout>

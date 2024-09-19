@@ -3,7 +3,6 @@ plugins {
     id("kotlin-android")
 }
 
-
 android {
     namespace = "com.example.poe2"
     compileSdk = 34
@@ -40,6 +39,7 @@ android {
 }
 
 dependencies {
+    // AndroidX and Material Components
     implementation(libs.androidx.core.ktx.v1101)
     implementation(libs.androidx.appcompat)
     implementation(libs.material.v190)
@@ -50,7 +50,28 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.fragment.ktx)
+
+    // Google Play Services
+    implementation (libs.play.services.maps.v1810)
+    implementation(libs.play.services.places.v1700)
+    implementation (libs.play.services.location.v2130)
+
+
+
+
+
+    // Networking
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.v500alpha8)
+
+    // Utilities
+    implementation(libs.android.maps.utils)
+    implementation(libs.places)
+    implementation(libs.androidx.fragment)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit.v115)
     androidTestImplementation(libs.androidx.espresso.core.v351)
 }
+

@@ -13,9 +13,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 
 import com.example.poe2.R
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import java.util.Locale
 
 
@@ -30,6 +33,7 @@ class ClientSettingsFragment : Fragment() {
     private lateinit var btnSave: Button
     private lateinit var btnCancel: Button
     private lateinit var ibtnHome: ImageButton
+    private lateinit var database: DatabaseReference
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,6 +41,9 @@ class ClientSettingsFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_client_settings, container, false)
+
+        // Initialize Firebase Database
+        database = FirebaseDatabase.getInstance("https://opsc7312database-default-rtdb.firebaseio.com/").reference
 
         // Initialize the UI components
         ibtnHome = view.findViewById(R.id.ibtnHome)
@@ -53,21 +60,8 @@ class ClientSettingsFragment : Fragment() {
         val languageAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, languages)
         spinnerLanguage.adapter = languageAdapter
 
-        // Load and set the saved language preference
-        val savedLanguage = loadLanguagePreference()
-        spinnerLanguage.setSelection(languages.indexOf(if (savedLanguage == "af") "Afrikaans" else "English"))
-
-
-        // Set up distance unit options (Kilometers, Meters)
-        val distanceUnits = arrayOf("km", "m")
-        val distanceUnitsAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, distanceUnits)
-        spinnerDistanceUnits.adapter = distanceUnitsAdapter
-
-        // Set up distance unit options (Kilometers, Meters)
-        val distanceRadius = arrayOf("10", "20", "30", "40","50","60", "70", "80", "90", "100")
-        val distanceRadiusAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, distanceRadius)
-        spinnerDistanceRadius.adapter = distanceRadiusAdapter
-
+        // Load and set the saved language preference from Firebase
+        loadLanguagePreference()
 
         // Handle Home Button navigation
         ibtnHome.setOnClickListener {
@@ -80,15 +74,10 @@ class ClientSettingsFragment : Fragment() {
             val selectedLanguage = spinnerLanguage.selectedItem.toString()
             changeAppLanguage(selectedLanguage)
 
-            // Get the selected distance unit and radius
-            val selectedDistanceUnit = spinnerDistanceUnits.selectedItem.toString()
-            val radius = spinnerDistanceRadius.selectedItem.toString().toIntOrNull() ?: 0
+            // Save the selected language to Firebase
+            updateSettings(selectedLanguage)
 
-            // Get the entered email and phone
-            val email = etEmail.text.toString()
-            val phone = etPhone.text.toString()
-
-            updateSettings(selectedLanguage, selectedDistanceUnit, radius, email, phone)
+            // Navigate back to the menu
             findNavController().navigate(R.id.action_nav_settings_client_to_nav_menu_client)
         }
 
@@ -125,20 +114,38 @@ class ClientSettingsFragment : Fragment() {
         activity?.recreate()
     }
 
+    // Function to update settings (save language preference to Firebase)
+    private fun updateSettings(language: String) {
+        val languageCode = if (language == "Afrikaans") "af" else "en"
 
-    // Function to update settings (this could save to a database or shared preferences)
-    private fun updateSettings(language: String, distanceUnit: String, radius: Int, email: String, phone: String) {
-        // Save or update user settings logic (to a local database, Firebase, etc.)
-        // For example:
-        // Save language preference
-        // Save distance unit and radius
-        // Save email and phone if provided
-        if (email.isNotEmpty()) {
-            // Update email
-        }
-        if (phone.isNotEmpty()) {
-            // Update phone
-        }
+        // Save language preference in Firebase
+        database.child("client/settings/language").setValue(languageCode)
+            .addOnSuccessListener {
+                if (isAdded) { // Check if fragment is still added
+                    context?.let {
+                        Toast.makeText(it, "Language preference saved!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+                if (isAdded) { // Check if fragment is still added
+                    context?.let {
+                        Toast.makeText(it, "Error saving language: ${exception.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+    }
+
+    // Function to load the saved language preference from Firebase
+    private fun loadLanguagePreference() {
+        database.child("clients/settings/language").get()
+            .addOnSuccessListener { dataSnapshot ->
+                val language = dataSnapshot.value as? String ?: "en" // Default to English
+                spinnerLanguage.setSelection(if (language == "af") 1 else 0)
+            }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "Failed to load settings", Toast.LENGTH_SHORT).show()
+            }
     }
 
     // Function to clear the fields
@@ -149,16 +156,6 @@ class ClientSettingsFragment : Fragment() {
         etEmail.text.clear()
         etPhone.text.clear()
     }
-    private fun saveLanguagePreference(language: String) {
-        val sharedPreferences = requireContext().getSharedPreferences("AppSettingsPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString("AppLanguage", language)
-        editor.apply()
-    }
-
-    private fun loadLanguagePreference(): String {
-        val sharedPreferences = requireContext().getSharedPreferences("AppSettingsPrefs", Context.MODE_PRIVATE)
-        return sharedPreferences.getString("AppLanguage", "af") ?: "af" // Default to English
-    }
-
 }
+
+

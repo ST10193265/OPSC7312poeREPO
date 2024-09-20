@@ -13,6 +13,10 @@
         <action
             android:id="@+id/action_nav_home_to_nav_register_client"
             app:destination="@id/nav_register_client" />
+
+        <action
+            android:id="@+id/action_nav_home_to_nav_register_dentist"
+            app:destination="@id/nav_register_dentist" />
     </fragment>
 
     <fragment
@@ -20,6 +24,12 @@
         android:name="com.example.opsc7312poepart2_code.ui.register_client.RegisterClientFragment"
         android:label="Register - Client"
         tools:layout="@layout/fragment_register_client" />
+
+    <fragment
+        android:id="@+id/nav_register_dentist"
+        android:name="com.example.opsc7312poepart2_code.ui.register_dentist.RegisterDentistFragment"
+        android:label="Register - Dentist"
+        tools:layout="@layout/fragment_register_dentist" />
 
     <fragment
         android:id="@+id/nav_menu_client"

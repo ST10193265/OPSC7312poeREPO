@@ -130,7 +130,7 @@ class SettingsDentistFragment : Fragment() {
 
     // Function to load the saved language preference from Firebase
     private fun loadLanguagePreference() {
-        database.child("settings/language").get()
+        database.child("Dentists/settings/language").get()
             .addOnSuccessListener { dataSnapshot ->
                 val language = dataSnapshot.value as? String ?: "en" // Default to English
                 spinnerLanguageD.setSelection(if (language == "af") 1 else 0)

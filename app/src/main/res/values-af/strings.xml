@@ -20,4 +20,11 @@
     <string name="save">Stoor</string>
     <string name="cancel">Kanselleer</string>
     <string name="search_dentist">Soek die naam wan n tandarts:</string>
+
+
+    // strings for the healthzone
+    <string name="wvFloss"> Hoe om te vlos.</string>
+    <string name="wvDentalTrouble"> Vroeë tekens van tandheelkundige probleme.</string>
+    <string name="wvXrays"> Is tandheelkundige X-strale sleg?</string>
+    <string name="wvFillings"> Hoe werk vulsels?</string>
 </resources>

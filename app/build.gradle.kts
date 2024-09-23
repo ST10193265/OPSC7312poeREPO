@@ -14,7 +14,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
+        buildConfigField("String", "MAPS_API_KEY", "\"AIzaSyDDKwRyK9dJDF8qxV41F8UDDvl4bSLhfUA\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -39,6 +39,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
     dependencies {
         // AndroidX and Material Components

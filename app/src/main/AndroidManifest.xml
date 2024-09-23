@@ -27,13 +27,12 @@
         </activity>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDuPSYPrpSImFJJUI_cor-5DSvuftk2WTc"/>
+            android:value="BuildConfig.MAPS_API_KEY" />
 
     </application>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET" />
-
 
 </manifest>

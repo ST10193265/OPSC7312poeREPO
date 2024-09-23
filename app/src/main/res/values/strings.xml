@@ -20,7 +20,6 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="search_dentist">Search the name of a dentist:</string>
-    <string name="google_maps_key">AIzaSyDDKwRyK9dJDF8qxV41F8UDDvl4bSLhfUA</string>
 
     // strings for the healthzone
     <string name="wvFloss"> How to Floss.</string>

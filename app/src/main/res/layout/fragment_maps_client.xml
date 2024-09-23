@@ -54,8 +54,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.029" />
 
-        <AutoCompleteTextView
-            android:id="@+id/autoCompleteTextView"
+        <Spinner
+            android:id="@+id/spinnerDentists"
             android:layout_width="370dp"
             android:layout_height="48dp"
             android:layout_marginTop="180dp"

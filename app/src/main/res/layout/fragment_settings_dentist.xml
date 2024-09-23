@@ -95,7 +95,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spinnerLanguageD" />
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/etAddress"
             android:layout_width="331dp"
             android:layout_height="43dp"

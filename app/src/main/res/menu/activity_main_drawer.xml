@@ -16,5 +16,9 @@
         <item
             android:id="@+id/nav_register_client"
             android:title="Register - Client" />
+        <item
+            android:id="@+id/nav_register_dentist"
+            android:title="Register - Dentist" />
+
     </group>
 </menu>

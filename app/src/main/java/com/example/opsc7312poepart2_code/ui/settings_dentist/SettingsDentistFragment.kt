@@ -6,6 +6,7 @@ import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -32,7 +33,6 @@ import com.google.firebase.database.FirebaseDatabase
 import java.util.Locale
 class SettingsDentistFragment : Fragment() {
 
-    // Declare variables for the UI components
     private lateinit var spinnerLanguageD: Spinner
     private lateinit var etAddress: AutoCompleteTextView
     private lateinit var etPhoneD: EditText
@@ -43,9 +43,6 @@ class SettingsDentistFragment : Fragment() {
     private lateinit var placesClient: PlacesClient
     private var destinationLatLng: LatLng? = null
     private val apiKey = BuildConfig.MAPS_API_KEY
-    private lateinit var mMap: GoogleMap
-
-    // Store the list of place suggestions
     private var placeSuggestions: List<String> = emptyList()
     private var isAddressValid = false
 
@@ -53,7 +50,6 @@ class SettingsDentistFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_settings_dentist, container, false)
 
         // Initialize Firebase Database
@@ -63,7 +59,33 @@ class SettingsDentistFragment : Fragment() {
         Places.initialize(requireContext(), apiKey)
         placesClient = Places.createClient(requireContext())
 
-        // Initialize the UI components
+        // Initialize UI components
+        initializeUIComponents(view)
+
+        // Load and set the saved language preference
+        loadLanguagePreference()
+
+        // Handle Home Button navigation
+        ibtnHomeD.setOnClickListener {
+            navigateToHome()
+        }
+
+        btnSaveD.setOnClickListener {
+            saveSettings()
+        }
+
+        btnCancelD.setOnClickListener {
+            clearFields()
+            navigateToHome()
+        }
+
+        // Setup autocomplete for address
+        setupAutoCompleteForAddress()
+
+        return view
+    }
+
+    private fun initializeUIComponents(view: View) {
         ibtnHomeD = view.findViewById(R.id.ibtnHomeD)
         spinnerLanguageD = view.findViewById(R.id.spinnerLanguageD)
         etAddress = view.findViewById(R.id.etAddress)
@@ -71,85 +93,72 @@ class SettingsDentistFragment : Fragment() {
         btnSaveD = view.findViewById(R.id.btnSaveD)
         btnCancelD = view.findViewById(R.id.btnCancelD)
 
-        // Set up language options (English, Afrikaans)
+        // Set up language options
         val languages = arrayOf("English", "Afrikaans")
         val languageAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, languages)
         spinnerLanguageD.adapter = languageAdapter
-
-        // Load and set the saved language preference
-        loadLanguagePreference()
-
-        // Handle Home Button navigation
-        ibtnHomeD.setOnClickListener {
-            findNavController().navigate(R.id.action_nav_settings_dentist_to_nav_menu_dentist)  }
-
-        btnSaveD.setOnClickListener {
-            // Get the selected language
-            val selectedLanguage = spinnerLanguageD.selectedItem.toString()
-
-            // Update the language in Firebase (always update the language)
-            updateSettings(selectedLanguage)
-
-            // Change the app's language
-            changeAppLanguage(selectedLanguage)
-
-            // Define a variable to hold the updated data for Firebase
-            val updatedData = mutableMapOf<String, Any>()
-
-            // Check if the address field is not empty and validate the address
-            if (etAddress.text.isNotEmpty()) {
-                if (!isAddressValid) {
-                    // If the address is not valid, show a message and stop the save process
-                    Toast.makeText(requireContext(), "Please select a valid address from the suggestions.", Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
-                } else {
-                    // If the address is valid, add it to the data to be updated
-                    updatedData["address"] = etAddress.text.toString()
-                }
-            }
-
-            // Check if the phone number field is not empty
-            val phoneNumber = etPhoneD.text.toString().trim()
-            if (phoneNumber.isNotEmpty()) {
-                // Add the phone number to the data to be updated
-                updatedData["phoneNumber"] = phoneNumber
-            }
-
-
-            val dentistId = "-O7EXMfOE2RETTbxNHTt"
-
-            // If there's data to update (address or phone number), update it in Firebase
-            if (updatedData.isNotEmpty()) {
-                // Update the dentist's info in Firebase
-                database.child("dentists/$dentistId").updateChildren(updatedData)
-                    .addOnSuccessListener {
-                        Toast.makeText(requireContext(), "Settings updated successfully!", Toast.LENGTH_SHORT).show()
-                        // Navigate back to the menu
-                        findNavController().navigate(R.id.action_nav_settings_dentist_to_nav_menu_dentist)
-                    }
-                    .addOnFailureListener { exception ->
-                        Toast.makeText(requireContext(), "Error updating settings: ${exception.message}", Toast.LENGTH_SHORT).show()
-                    }
-            } else {
-                // If no address or phone number was entered, just show a success message without updating Firebase
-                Toast.makeText(requireContext(), "Settings updated without address/phone number change!", Toast.LENGTH_SHORT).show()
-                findNavController().navigate(R.id.action_nav_settings_dentist_to_nav_menu_dentist)
-            }
-        }
-
-        // Handle Cancel Button click (clear input or navigate back)
-        btnCancelD.setOnClickListener {
-            clearFields()
-            findNavController().navigate(R.id.action_nav_settings_dentist_to_nav_menu_dentist)
-        }
-
-        // Setup the AutoComplete for the Address field
-        setupAutoCompleteForAddress()
-
-        return view
     }
 
-    // Set up Google Places Autocomplete for the Address field
+    private fun saveSettings() {
+        val selectedLanguage = spinnerLanguageD.selectedItem.toString()
+        val updatedData = mutableMapOf<String, Any>()
+
+
+        if (selectedLanguage.isNotEmpty()) {
+
+                updatedData["language"] = selectedLanguage
+
+        }
+
+        // Validate and update address
+        val address = etAddress.text.toString().trim()
+        if (address.isNotEmpty()) {
+            if (!isAddressValid) {
+                Toast.makeText(requireContext(), "Please select a valid address from suggestions.", Toast.LENGTH_SHORT).show()
+                return
+            } else {
+                updatedData["address"] = address
+            }
+        }
+
+        // Validate and update phone number
+        val phoneNumber = etPhoneD.text.toString().trim()
+        if (phoneNumber.isNotEmpty()) {
+            updatedData["phoneNumber"] = phoneNumber
+        }
+
+        // Dentist ID (this should be dynamic or fetched accordingly)
+        val dentistId = "-O7EXMfOE2RETTbxNHTt"
+
+        // Update data in Firebase if there's any change
+        if (updatedData.isNotEmpty()) {
+            updateSettings(dentistId, updatedData)
+        } else {
+            Toast.makeText(requireContext(), "No changes made!", Toast.LENGTH_SHORT).show()
+            navigateToHome()
+        }
+    }
+
+
+
+    private fun updateSettings(dentistId: String, updatedData: Map<String, Any>) {
+
+        database.child("dentists/$dentistId").updateChildren(updatedData)
+            .addOnSuccessListener {
+                Toast.makeText(context, "Settings updated successfully!", Toast.LENGTH_SHORT).show()
+                navigateToHome()
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(context, "Error updating settings: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+
+
+    private fun navigateToHome() {
+        findNavController().navigate(R.id.action_nav_settings_dentist_to_nav_menu_dentist)
+    }
+
     private fun setupAutoCompleteForAddress() {
         val autocompleteAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, emptyList<String>())
         etAddress.setAdapter(autocompleteAdapter)
@@ -164,7 +173,7 @@ class SettingsDentistFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 if (!s.isNullOrEmpty()) {
                     fetchPlaceSuggestions(s.toString())
-                    isAddressValid = false // Reset validity when text changes
+                    isAddressValid = false
                 }
             }
 
@@ -173,7 +182,6 @@ class SettingsDentistFragment : Fragment() {
         })
     }
 
-    // Fetch place suggestions from Google Places API
     private fun fetchPlaceSuggestions(query: String) {
         val request = FindAutocompletePredictionsRequest.builder()
             .setQuery(query)
@@ -187,87 +195,34 @@ class SettingsDentistFragment : Fragment() {
         }
     }
 
-    // Find the selected place and show it on the map
     private fun findPlace(placeName: String) {
         val geocoder = Geocoder(requireContext())
         val addressList = geocoder.getFromLocationName(placeName, 1)
         if (addressList != null && addressList.isNotEmpty()) {
             val address = addressList[0]
             destinationLatLng = LatLng(address.latitude, address.longitude)
-
-            // Check if mMap is initialized before using it
-            if (::mMap.isInitialized && destinationLatLng != null) {
-                mMap.addMarker(MarkerOptions().position(destinationLatLng!!).title("Destination"))
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationLatLng!!, 12f))
-            } else {
-                Toast.makeText(requireContext(), "Map not initialized or no destination found.", Toast.LENGTH_SHORT).show()
-            }
+            // Handle the location in the map if necessary
         }
     }
 
-
-    // Function to change the app's language
-    private fun changeAppLanguage(language: String) {
-        val locale = when (language) {
-            "Afrikaans" -> Locale("af")
-            else -> Locale("en")
-        }
-
-        // Set the locale
-        Locale.setDefault(locale)
-
-        // Get resources and configuration
-        val resources = requireContext().resources
-        val config = resources.configuration
-
-        // Apply the locale to the configuration
-        config.setLocale(locale)
-
-        // Update the resources with the new configuration
-        resources.updateConfiguration(config, resources.displayMetrics)
-
-        // Restart the activity to apply the language change
-        activity?.recreate()
-    }
-    private fun updateSettings(language: String) {
-        val languageCode = if (language == "Afrikaans") "af" else "en"
-
-        // Save language preference in Firebase
-        database.child("settings/language").setValue(languageCode)
-            .addOnSuccessListener {
-                if (isAdded) { // Check if fragment is still added
-                    context?.let {
-                        Toast.makeText(it, "Language preference saved!", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-            .addOnFailureListener { exception ->
-                if (isAdded) { // Check if fragment is still added
-                    context?.let {
-                        Toast.makeText(it, "Error saving language: ${exception.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-    }
-
-
-    // Function to load the saved language preference from Firebase
     private fun loadLanguagePreference() {
         database.child("Dentists/settings/language").get()
             .addOnSuccessListener { dataSnapshot ->
-                val language = dataSnapshot.value as? String ?: "en" // Default to English
+                val language = dataSnapshot.value as? String ?: "en"
                 spinnerLanguageD.setSelection(if (language == "af") 1 else 0)
             }
             .addOnFailureListener {
-                Toast.makeText(requireContext(), "Failed to load settings", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Failed to load settings", Toast.LENGTH_SHORT)
+                    .show()
             }
     }
 
-    // Function to clear the fields
-    private fun clearFields() {
-        spinnerLanguageD.setSelection(-1)
-        etAddress.text.clear()
-        etPhoneD.text.clear()
+        private fun clearFields() {
+            spinnerLanguageD.setSelection(0)
+            etAddress.setText("")
+            etPhoneD.setText("")
+        }
     }
-}
+
+
 

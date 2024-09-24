@@ -130,7 +130,11 @@ class MapsClientFragment : Fragment() {
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                Toast.makeText(requireContext(), "Failed to load dentist data: ${databaseError.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Failed to load dentist data: ${databaseError.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
     }
@@ -160,9 +164,11 @@ class MapsClientFragment : Fragment() {
             if (location != null) {
                 val originLatLng = LatLng(location.latitude, location.longitude)
 
+                // Add `units=metric` to use kilometers/meters
                 val url = "https://maps.googleapis.com/maps/api/directions/json?" +
                         "origin=${originLatLng.latitude},${originLatLng.longitude}" +
                         "&destination=${destination.latitude},${destination.longitude}" +
+                        "&units=metric" +  // This will return distances in km and meters
                         "&key=$apiKey"
                 fetchDirections(url)
             } else {
@@ -202,14 +208,49 @@ class MapsClientFragment : Fragment() {
                             val legs = route.getJSONArray("legs")
                             val directions = StringBuilder()
 
-                            // Collect the directions steps
                             for (i in 0 until legs.length()) {
                                 val steps = legs.getJSONObject(i).getJSONArray("steps")
                                 for (j in 0 until steps.length()) {
-                                    val instruction = steps.getJSONObject(j).getString("html_instructions")
-                                    directions.append(Html.fromHtml(instruction)).append("\n")
+                                    val step = steps.getJSONObject(j)
+
+                                    // Extract instruction and distance
+                                    val instruction = Html.fromHtml(step.getString("html_instructions")).toString()
+                                    val distance = step.getJSONObject("distance").getString("text")
+                                    val maneuver = step.optString("maneuver", "")
+                                    val icon = when (maneuver) {
+                                        "turn-slight-left" -> "↖️"
+                                        "turn-left" -> "⬅️"
+                                        "turn-sharp-left" -> "↙️"
+                                        "uturn-left" -> "↩️"
+                                        "turn-slight-right" -> "↗️"
+                                        "turn-right" -> "➡️"
+                                        "turn-sharp-right" -> "↘️"
+                                        "uturn-right" -> "↪️"
+                                        "straight" -> "⬆️"
+                                        "ramp-left" -> "↖️"
+                                        "ramp-right" -> "↗️"
+                                        "fork-left" -> "↖️"
+                                        "fork-right" -> "↗️"
+                                        "merge" -> "🛣️"
+                                        "roundabout-left" -> "↪️"
+                                        "roundabout-right" -> "↩️"
+                                        else -> "⬆️"
+                                    }
+
+                                    // Use regex to extract street names from instructions
+                                    val streetNameRegex = Regex("onto ([^<]+)")
+                                    val streetNameMatch = streetNameRegex.find(instruction)
+                                    val streetName = streetNameMatch?.groups?.get(1)?.value ?: "Unknown street"
+
+                                    // Append instruction with street name and distance
+                                    directions.append("$icon $instruction ($distance)").append("\n")
+                                    if (streetName != "Unknown street") {
+                                        directions.append("Street: $streetName").append("\n")
+                                    }
+                                    directions.append("\n")
                                 }
                             }
+
                             requireActivity().runOnUiThread {
                                 directionsTextView.text = directions.toString()
                             }
@@ -232,6 +273,8 @@ class MapsClientFragment : Fragment() {
         })
     }
 
+
+
     private fun requestLocationPermissions() {
         ActivityCompat.requestPermissions(
             requireActivity(),
@@ -240,6 +283,7 @@ class MapsClientFragment : Fragment() {
         )
     }
 }
+
 
 
 

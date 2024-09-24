@@ -60,102 +60,143 @@ class ClientSettingsFragment : Fragment() {
         val languageAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, languages)
         spinnerLanguage.adapter = languageAdapter
 
-        // Load and set the saved language preference from Firebase
-        loadLanguagePreference()
+        // Set up distance units (default to "km")
+        val distanceUnits = arrayOf("km", "m")
+        val distanceUnitsAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, distanceUnits)
+        spinnerDistanceUnits.adapter = distanceUnitsAdapter
+        spinnerDistanceUnits.setSelection(0) // Default to km
+
+        // Set up distance radius (default to "No Limit")
+        val distanceRadius = arrayOf("No Limit", "1 km", "5 km", "10 km", "20 km")
+        val distanceRadiusAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, distanceRadius)
+        spinnerDistanceRadius.adapter = distanceRadiusAdapter
+        spinnerDistanceRadius.setSelection(0) // Default to "No Limit"
+
+        // Load and set the saved settings from Firebase
+        loadSettings()
 
         // Handle Home Button navigation
         ibtnHome.setOnClickListener {
-            findNavController().navigate(R.id.action_nav_settings_client_to_nav_menu_client)
+            navigateToHome()
         }
 
         // Handle Save Button click
         btnSave.setOnClickListener {
-            // Get the selected language
-            val selectedLanguage = spinnerLanguage.selectedItem.toString()
-            changeAppLanguage(selectedLanguage)
-
-            // Save the selected language to Firebase
-            updateSettings(selectedLanguage)
-
-            // Navigate back to the menu
-            findNavController().navigate(R.id.action_nav_settings_client_to_nav_menu_client)
+            saveSettings()
         }
 
         // Handle Cancel Button click (clear input or navigate back)
         btnCancel.setOnClickListener {
             clearFields()
-            findNavController().navigate(R.id.action_nav_settings_client_to_nav_menu_client)
+            navigateToHome()
         }
 
         return view
     }
 
-    // Function to change the app's language
-    private fun changeAppLanguage(language: String) {
-        val locale = when (language) {
-            "Afrikaans" -> Locale("af")
-            else -> Locale("en")
+    private fun saveSettings() {
+        val selectedLanguage = spinnerLanguage.selectedItem.toString()
+        val selectedDistanceUnit = spinnerDistanceUnits.selectedItem.toString()
+        val selectedDistanceRadius = spinnerDistanceRadius.selectedItem.toString()
+        val email = etEmail.text.toString().trim()
+        val phoneNumber = etPhone.text.toString().trim()
+
+        val updatedData = mutableMapOf<String, Any>()
+
+        // Add selected language
+        updatedData["language"] = if (selectedLanguage == "Afrikaans") "af" else "en"
+
+        // Add selected distance unit
+        updatedData["distanceUnit"] = selectedDistanceUnit
+
+        // Add selected distance radius
+        updatedData["distanceRadius"] = selectedDistanceRadius
+
+        // Only add email and phone if they're not empty
+        if (email.isNotEmpty()) {
+            updatedData["email"] = email
         }
 
-        // Set the locale
-        Locale.setDefault(locale)
+        if (phoneNumber.isNotEmpty()) {
+            updatedData["phoneNumber"] = phoneNumber
+        }
 
-        // Get resources and configuration
-        val resources = requireContext().resources
-        val config = resources.configuration
+        // Dentist ID (this should be dynamic or fetched accordingly)
+        val clientId = "-O79y5XftzGBuX4w0_UU"
 
-        // Apply the locale to the configuration
-        config.setLocale(locale)
-
-        // Update the resources with the new configuration
-        resources.updateConfiguration(config, resources.displayMetrics)
-
-        // Restart the activity to apply the language change
-        activity?.recreate()
+        // Update data in Firebase if there's any change
+        if (updatedData.isNotEmpty()) {
+            updateSettings(clientId, updatedData)
+        } else {
+            Toast.makeText(requireContext(), "No changes made!", Toast.LENGTH_SHORT).show()
+            navigateToHome()
+        }
     }
 
-    // Function to update settings (save language preference to Firebase)
-    private fun updateSettings(language: String) {
-        val languageCode = if (language == "Afrikaans") "af" else "en"
-
-        // Save language preference in Firebase
-        database.child("client/settings/language").setValue(languageCode)
+    private fun updateSettings(clientId: String, updatedData: Map<String, Any>) {
+        val selectedLanguage = spinnerLanguage.selectedItem.toString()
+        database.child("clients/$clientId").updateChildren(updatedData)
             .addOnSuccessListener {
-                if (isAdded) { // Check if fragment is still added
-                    context?.let {
-                        Toast.makeText(it, "Language preference saved!", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                Toast.makeText(context, "Settings updated successfully!", Toast.LENGTH_SHORT).show()
+                // Change app language and recreate activity/fragment
+                updateAppLanguage(selectedLanguage)
+                navigateToHome()
             }
             .addOnFailureListener { exception ->
-                if (isAdded) { // Check if fragment is still added
-                    context?.let {
-                        Toast.makeText(it, "Error saving language: ${exception.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                Toast.makeText(context, "Error updating settings: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
-    // Function to load the saved language preference from Firebase
-    private fun loadLanguagePreference() {
-        database.child("clients/settings/language").get()
+    private fun updateAppLanguage(language: String) {
+        val locale = if (language == "Afrikaans") Locale("af") else Locale("en")
+        Locale.setDefault(locale)
+
+        val config = requireContext().resources.configuration
+        config.setLocale(locale)
+
+        requireContext().resources.updateConfiguration(config, requireContext().resources.displayMetrics)
+
+        // Recreate the activity to apply the new language setting
+        requireActivity().recreate()
+    }
+
+
+    private fun loadSettings() {
+        val clientId = "-O79y5XftzGBuX4w0_UU" // Dynamic ID needed
+        database.child("clients/$clientId").get()
             .addOnSuccessListener { dataSnapshot ->
-                val language = dataSnapshot.value as? String ?: "en" // Default to English
-                spinnerLanguage.setSelection(if (language == "af") 1 else 0)
+                if (dataSnapshot.exists()) {
+                    val language = dataSnapshot.child("language").value as? String ?: "en"
+                    val distanceUnit = dataSnapshot.child("distanceUnit").value as? String ?: "km"
+                    val distanceRadius = dataSnapshot.child("distanceRadius").value as? String ?: "No Limit"
+                    val email = dataSnapshot.child("email").value as? String ?: ""
+                    val phoneNumber = dataSnapshot.child("phoneNumber").value as? String ?: ""
+
+                    // Set the UI components with the loaded data
+                    spinnerLanguage.setSelection(if (language == "af") 1 else 0)
+                    spinnerDistanceUnits.setSelection(if (distanceUnit == "km") 0 else 1)
+                    spinnerDistanceRadius.setSelection(if (distanceRadius == "No Limit") 0 else distanceRadius.replace(" km", "").toInt() / 5)
+                    etEmail.setText(email)
+                    etPhone.setText(phoneNumber)
+                }
             }
             .addOnFailureListener {
                 Toast.makeText(requireContext(), "Failed to load settings", Toast.LENGTH_SHORT).show()
             }
     }
 
-    // Function to clear the fields
     private fun clearFields() {
-        spinnerLanguage.setSelection(-1)
-        spinnerDistanceUnits.setSelection(-1)
-        spinnerDistanceRadius.setSelection(-1)
+        spinnerLanguage.setSelection(0)
+        spinnerDistanceUnits.setSelection(0) // Default to km
+        spinnerDistanceRadius.setSelection(0) // Default to No Limit
         etEmail.text.clear()
         etPhone.text.clear()
     }
+
+    private fun navigateToHome() {
+        findNavController().navigate(R.id.action_nav_settings_client_to_nav_menu_client)
+    }
 }
+
 
 

@@ -7,6 +7,7 @@ import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.text.Editable
+import android.text.Html
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,6 +19,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -48,13 +50,12 @@ import org.json.JSONObject
 import java.io.IOException
 import java.util.ArrayList
 
-class MapsClientFragment : Fragment(), OnMapReadyCallback {
+class MapsClientFragment : Fragment() {
 
-    private lateinit var mMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var spinnerDentists: Spinner
     private lateinit var btnGoNow: Button
-    private lateinit var placesClient: PlacesClient
+    private lateinit var directionsTextView: TextView // TextView to display directions
     private var destinationLatLng: LatLng? = null
     private val apiKey = BuildConfig.MAPS_API_KEY
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
@@ -65,22 +66,18 @@ class MapsClientFragment : Fragment(), OnMapReadyCallback {
     ): View {
         val view = inflater.inflate(R.layout.fragment_maps_client, container, false)
 
-        // Initialize the map
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
-        mapFragment?.getMapAsync(this)
-
         // Initialize FusedLocationProviderClient
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         // Initialize Places API
         Places.initialize(requireContext(), apiKey)
-        placesClient = Places.createClient(requireContext())
 
         // Initialize the Spinner
         spinnerDentists = view.findViewById(R.id.spinnerDentists)
         fetchDentistData()
 
         btnGoNow = view.findViewById(R.id.btnGoNow)
+        directionsTextView = view.findViewById(R.id.directionsTextView) // Initialize TextView for directions
 
         // Home button
         val ibtnHome: ImageButton = view.findViewById(R.id.ibtnHome)
@@ -92,19 +89,13 @@ class MapsClientFragment : Fragment(), OnMapReadyCallback {
         btnGoNow.setOnClickListener {
             if (destinationLatLng != null) {
                 getDirections(destinationLatLng!!)
-                Toast.makeText(requireContext(), "Successful", Toast.LENGTH_SHORT).show()
-
+                Toast.makeText(requireContext(), "Fetching directions...", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(requireContext(), "Please select a destination", Toast.LENGTH_SHORT).show()
             }
         }
 
         return view
-    }
-
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-        updateLocationUI()
     }
 
     private fun fetchDentistData() {
@@ -144,23 +135,6 @@ class MapsClientFragment : Fragment(), OnMapReadyCallback {
         })
     }
 
-    private fun updateLocationUI() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mMap.isMyLocationEnabled = true
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                if (location != null) {
-                    val currentLatLng = LatLng(location.latitude, location.longitude)
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
-                } else {
-                    Log.w("MapsClientFragment", "Current location is null.")
-                }
-            }
-        } else {
-            mMap.isMyLocationEnabled = false
-            Toast.makeText(requireContext(), "Location permission is required.", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     private fun findPlace(addressString: String) {
         val geocoder = Geocoder(requireContext())
         try {
@@ -168,8 +142,6 @@ class MapsClientFragment : Fragment(), OnMapReadyCallback {
             if (addressList != null && addressList.isNotEmpty()) {
                 val address = addressList[0]
                 destinationLatLng = LatLng(address.latitude, address.longitude)
-                mMap.addMarker(MarkerOptions().position(destinationLatLng!!).title("Destination"))
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationLatLng!!, 12f))
             } else {
                 Toast.makeText(requireContext(), "Address not found", Toast.LENGTH_SHORT).show()
             }
@@ -180,7 +152,7 @@ class MapsClientFragment : Fragment(), OnMapReadyCallback {
 
     private fun getDirections(destination: LatLng) {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+            requestLocationPermissions()
             return
         }
 
@@ -188,20 +160,18 @@ class MapsClientFragment : Fragment(), OnMapReadyCallback {
             if (location != null) {
                 val originLatLng = LatLng(location.latitude, location.longitude)
 
-                Log.d("MapsClientFragment", "Origin: $originLatLng, Destination: $destination")
-
                 val url = "https://maps.googleapis.com/maps/api/directions/json?" +
                         "origin=${originLatLng.latitude},${originLatLng.longitude}" +
                         "&destination=${destination.latitude},${destination.longitude}" +
                         "&key=$apiKey"
-                Log.d("MapsClientFragment", "URL: $url") // Log the URL being called
                 fetchDirections(url)
             } else {
-                Toast.makeText(requireContext(), "Unable to get current location", Toast.LENGTH_SHORT).show()
+                Log.d("MapsClientFragment", "Unable to get current location")
             }
+        }.addOnFailureListener {
+            Log.d("MapsClientFragment", "Failed to retrieve location.")
         }
     }
-
 
     private fun fetchDirections(url: String) {
         val client = OkHttpClient()
@@ -224,18 +194,24 @@ class MapsClientFragment : Fragment(), OnMapReadyCallback {
 
                 response.body?.let { responseBody ->
                     val jsonData = responseBody.string()
-                    Log.d("MapsClientFragment", "Response JSON: $jsonData") // Log the response data
-
                     try {
                         val jsonObject = JSONObject(jsonData)
                         val routes = jsonObject.getJSONArray("routes")
                         if (routes.length() > 0) {
                             val route = routes.getJSONObject(0)
-                            val overviewPolyline = route.getJSONObject("overview_polyline").getString("points")
-                            val points = decodePolyline(overviewPolyline)
+                            val legs = route.getJSONArray("legs")
+                            val directions = StringBuilder()
 
+                            // Collect the directions steps
+                            for (i in 0 until legs.length()) {
+                                val steps = legs.getJSONObject(i).getJSONArray("steps")
+                                for (j in 0 until steps.length()) {
+                                    val instruction = steps.getJSONObject(j).getString("html_instructions")
+                                    directions.append(Html.fromHtml(instruction)).append("\n")
+                                }
+                            }
                             requireActivity().runOnUiThread {
-                                drawPolylineOnMap(points)
+                                directionsTextView.text = directions.toString()
                             }
                         } else {
                             requireActivity().runOnUiThread {
@@ -243,7 +219,6 @@ class MapsClientFragment : Fragment(), OnMapReadyCallback {
                             }
                         }
                     } catch (e: JSONException) {
-                        e.printStackTrace()
                         requireActivity().runOnUiThread {
                             Toast.makeText(requireContext(), "Error parsing JSON", Toast.LENGTH_SHORT).show()
                         }
@@ -257,46 +232,14 @@ class MapsClientFragment : Fragment(), OnMapReadyCallback {
         })
     }
 
-
-    private fun decodePolyline(encoded: String): List<LatLng> {
-        val poly = ArrayList<LatLng>()
-        var index = 0
-        val len = encoded.length
-        var lat = 0
-        var lng = 0
-
-        while (index < len) {
-            var b: Int
-            var shift = 0
-            var result = 0
-            do {
-                b = encoded[index++].code - 63
-                result = result or (b and 0x1f shl shift)
-                shift += 5
-            } while (b >= 0x20)
-            val dlat = if (result and 1 != 0) (result shr 1).inv() else result shr 1
-            lat += dlat
-
-            shift = 0
-            result = 0
-            do {
-                b = encoded[index++].code - 63
-                result = result or (b and 0x1f shl shift)
-                shift += 5
-            } while (b >= 0x20)
-            val dlng = if (result and 1 != 0) (result shr 1).inv() else result shr 1
-            lng += dlng
-
-            val latLng = LatLng(lat / 1E5, lng / 1E5)
-            poly.add(latLng)
-        }
-        return poly
-    }
-
-    private fun drawPolylineOnMap(points: List<LatLng>) {
-        val polylineOptions = PolylineOptions().addAll(points).color(Color.BLUE).width(5f)
-        mMap.addPolyline(polylineOptions)
+    private fun requestLocationPermissions() {
+        ActivityCompat.requestPermissions(
+            requireActivity(),
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            LOCATION_PERMISSION_REQUEST_CODE
+        )
     }
 }
+
 
 

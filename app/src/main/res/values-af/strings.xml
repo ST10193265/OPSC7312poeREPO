@@ -6,12 +6,9 @@
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
 
     <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
-    <string name="change_address">Verander Adres:</string>
+  <string name="change_address">Verander Adres:</string>
     <string name="change_language">Verander Taal:</string>
     <string name="change_distance_units">Verander Afstandseenhede:</string>
     <string name="change_radius">Verander Afstandradius (eenhede):</string>
@@ -27,4 +24,13 @@
     <string name="wvDentalTrouble"> Vroeë tekens van tandheelkundige probleme.</string>
     <string name="wvXrays"> Is tandheelkundige X-strale sleg?</string>
     <string name="wvFillings"> Hoe werk vulsels?</string>
+
+    <string name="book_appointments">Maak Afsprake</string>
+    <string name="view_appointments">Sien Afsprake</string>
+    <string name="notifications">Kennisgewings</string>
+    <string name="setting_menu">Instellings</string>
+    <string name="maps">Kaarte</string>
+    <string name="health_zone">Gesondheid Sone</string>
+    <string name="manage_appointments">Bestuur Afsprake</string>
+
 </resources>

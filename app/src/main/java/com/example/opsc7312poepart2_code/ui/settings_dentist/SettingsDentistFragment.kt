@@ -31,6 +31,7 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import java.util.Locale
+
 class SettingsDentistFragment : Fragment() {
 
     private lateinit var spinnerLanguageD: Spinner
@@ -140,12 +141,12 @@ class SettingsDentistFragment : Fragment() {
     }
 
 
-
     private fun updateSettings(dentistId: String, updatedData: Map<String, Any>) {
-
+        val selectedLanguage = spinnerLanguageD.selectedItem.toString()
         database.child("dentists/$dentistId").updateChildren(updatedData)
             .addOnSuccessListener {
                 Toast.makeText(context, "Settings updated successfully!", Toast.LENGTH_SHORT).show()
+                updateAppLanguage(selectedLanguage)
                 navigateToHome()
             }
             .addOnFailureListener { exception ->
@@ -153,6 +154,18 @@ class SettingsDentistFragment : Fragment() {
             }
     }
 
+    private fun updateAppLanguage(language: String) {
+        val locale = if (language == "Afrikaans") Locale("af") else Locale("en")
+        Locale.setDefault(locale)
+
+        val config = requireContext().resources.configuration
+        config.setLocale(locale)
+
+        requireContext().resources.updateConfiguration(config, requireContext().resources.displayMetrics)
+
+        // Recreate the activity to apply the new language setting
+        requireActivity().recreate()
+    }
 
 
     private fun navigateToHome() {
@@ -215,6 +228,7 @@ class SettingsDentistFragment : Fragment() {
                 Toast.makeText(requireContext(), "Failed to load settings", Toast.LENGTH_SHORT)
                     .show()
             }
+
     }
 
         private fun clearFields() {

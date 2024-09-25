@@ -24,4 +24,11 @@
     <string name="wvDentalTrouble"> Early signs of Dental Trouble.</string>
     <string name="wvXrays"> Are Dental X-rays bad?</string>
     <string name="wvFillings"> How do Fillings Work?</string>
+    <string name="book_appointments">Book Appointments</string>
+    <string name="view_appointments">View Appointments</string>
+    <string name="notifications">Notifications</string>
+    <string name="setting_menu">Settings</string>
+    <string name="maps">Maps</string>
+    <string name="health_zone">Health Zone</string>
+    <string name="manage_appointments">Manage Appointments</string>
 </resources>

@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.text.Editable
 import android.text.Html
 import android.text.TextWatcher
@@ -33,6 +34,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
@@ -49,16 +51,22 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.util.ArrayList
+import java.util.Locale
 
-class MapsClientFragment : Fragment() {
+class MapsClientFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var spinnerDentists: Spinner
     private lateinit var btnGoNow: Button
-    private lateinit var directionsTextView: TextView // TextView to display directions
+    private lateinit var map: GoogleMap
     private var destinationLatLng: LatLng? = null
     private val apiKey = BuildConfig.MAPS_API_KEY
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
+    private lateinit var mapFragment: SupportMapFragment
+    private lateinit var textViewDirection: TextView  // New TextView for directions
+    private lateinit var tts: TextToSpeech  // Text-to-Speech instance
+    private var currentStep: Int = 0
+    private val steps = mutableListOf<String>()  // Store directions steps
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,18 +80,30 @@ class MapsClientFragment : Fragment() {
         // Initialize Places API
         Places.initialize(requireContext(), apiKey)
 
-        // Initialize the Spinner
+        // Initialize UI components
         spinnerDentists = view.findViewById(R.id.spinnerDentists)
-        fetchDentistData()
-
         btnGoNow = view.findViewById(R.id.btnGoNow)
-        directionsTextView = view.findViewById(R.id.directionsTextView) // Initialize TextView for directions
+        textViewDirection = view.findViewById(R.id.textViewDirection)  // Initialize the TextView
+
+        // Initialize Text-to-Speech
+        tts = TextToSpeech(requireContext()) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                tts.language = Locale.US  // Set language for TTS
+            }
+        }
+
+        // Initialize Map Fragment
+        mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
 
         // Home button
         val ibtnHome: ImageButton = view.findViewById(R.id.ibtnHome)
         ibtnHome.setOnClickListener {
             findNavController().navigate(R.id.action_nav_maps_client_to_nav_menu_client)
         }
+
+        // Fetch dentist data
+        fetchDentistData()
 
         // Set click listener for Go Now button
         btnGoNow.setOnClickListener {
@@ -143,17 +163,23 @@ class MapsClientFragment : Fragment() {
         val geocoder = Geocoder(requireContext())
         try {
             val addressList = geocoder.getFromLocationName(addressString, 1)
-            if (addressList != null && addressList.isNotEmpty()) {
-                val address = addressList[0]
-                destinationLatLng = LatLng(address.latitude, address.longitude)
-            } else {
-                Toast.makeText(requireContext(), "Address not found", Toast.LENGTH_SHORT).show()
+            if (addressList != null) {
+                if (addressList.isNotEmpty()) {
+                    val address = addressList[0]
+                    destinationLatLng = LatLng(address.latitude, address.longitude)
+                    // Add a marker for the destination
+                    map.addMarker(MarkerOptions().position(destinationLatLng!!).title("Destination: $addressString"))
+                    // Move and animate the camera to the destination
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(destinationLatLng!!, 22f))
+
+                } else {
+                    Toast.makeText(requireContext(), "Address not found", Toast.LENGTH_SHORT).show()
+                }
             }
         } catch (e: IOException) {
             Toast.makeText(requireContext(), "Geocoder service is not available", Toast.LENGTH_SHORT).show()
         }
     }
-
     private fun getDirections(destination: LatLng) {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestLocationPermissions()
@@ -163,26 +189,31 @@ class MapsClientFragment : Fragment() {
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
                 val originLatLng = LatLng(location.latitude, location.longitude)
-
-                // Add `units=metric` to use kilometers/meters
-                val url = "https://maps.googleapis.com/maps/api/directions/json?" +
-                        "origin=${originLatLng.latitude},${originLatLng.longitude}" +
-                        "&destination=${destination.latitude},${destination.longitude}" +
-                        "&units=metric" +  // This will return distances in km and meters
-                        "&key=$apiKey"
+                val url = buildDirectionsUrl(originLatLng, destination)
                 fetchDirections(url)
             } else {
                 Log.d("MapsClientFragment", "Unable to get current location")
             }
         }.addOnFailureListener {
             Log.d("MapsClientFragment", "Failed to retrieve location.")
+            Toast.makeText(requireContext(), "Failed to retrieve location", Toast.LENGTH_SHORT).show()
         }
     }
 
+
+    private fun requestLocationPermissions() {
+        ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+    }
+
+    private fun buildDirectionsUrl(origin: LatLng, destination: LatLng): String {
+        val str_origin = "origin=${origin.latitude},${origin.longitude}"
+        val str_dest = "destination=${destination.latitude},${destination.longitude}"
+        val sensor = "sensor=false"
+        return "https://maps.googleapis.com/maps/api/directions/json?$str_origin&$str_dest&$sensor&key=$apiKey"
+    }
     private fun fetchDirections(url: String) {
         val client = OkHttpClient()
         val request = Request.Builder().url(url).build()
-
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 requireActivity().runOnUiThread {
@@ -191,99 +222,169 @@ class MapsClientFragment : Fragment() {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                if (!response.isSuccessful) {
-                    requireActivity().runOnUiThread {
-                        Toast.makeText(requireContext(), "Response not successful: ${response.code}", Toast.LENGTH_SHORT).show()
-                    }
-                    return
-                }
-
-                response.body?.let { responseBody ->
-                    val jsonData = responseBody.string()
-                    try {
-                        val jsonObject = JSONObject(jsonData)
-                        val routes = jsonObject.getJSONArray("routes")
-                        if (routes.length() > 0) {
-                            val route = routes.getJSONObject(0)
-                            val legs = route.getJSONArray("legs")
-                            val directions = StringBuilder()
-
-                            for (i in 0 until legs.length()) {
-                                val steps = legs.getJSONObject(i).getJSONArray("steps")
-                                for (j in 0 until steps.length()) {
-                                    val step = steps.getJSONObject(j)
-
-                                    // Extract instruction and distance
-                                    val instruction = Html.fromHtml(step.getString("html_instructions")).toString()
-                                    val distance = step.getJSONObject("distance").getString("text")
-                                    val maneuver = step.optString("maneuver", "")
-                                    val icon = when (maneuver) {
-                                        "turn-slight-left" -> "↖️"
-                                        "turn-left" -> "⬅️"
-                                        "turn-sharp-left" -> "↙️"
-                                        "uturn-left" -> "↩️"
-                                        "turn-slight-right" -> "↗️"
-                                        "turn-right" -> "➡️"
-                                        "turn-sharp-right" -> "↘️"
-                                        "uturn-right" -> "↪️"
-                                        "straight" -> "⬆️"
-                                        "ramp-left" -> "↖️"
-                                        "ramp-right" -> "↗️"
-                                        "fork-left" -> "↖️"
-                                        "fork-right" -> "↗️"
-                                        "merge" -> "🛣️"
-                                        "roundabout-left" -> "↪️"
-                                        "roundabout-right" -> "↩️"
-                                        else -> "⬆️"
-                                    }
-
-                                    // Use regex to extract street names from instructions
-                                    val streetNameRegex = Regex("onto ([^<]+)")
-                                    val streetNameMatch = streetNameRegex.find(instruction)
-                                    val streetName = streetNameMatch?.groups?.get(1)?.value ?: "Unknown street"
-
-                                    // Append instruction with street name and distance
-                                    directions.append("$icon $instruction ($distance)").append("\n")
-                                    if (streetName != "Unknown street") {
-                                        directions.append("Street: $streetName").append("\n")
-                                    }
-                                    directions.append("\n")
-                                }
-                            }
-
-                            requireActivity().runOnUiThread {
-                                directionsTextView.text = directions.toString()
-                            }
-                        } else {
-                            requireActivity().runOnUiThread {
-                                Toast.makeText(requireContext(), "No routes found", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    } catch (e: JSONException) {
+                if (response.isSuccessful) {
+                    response.body?.let { responseBody ->
+                        val jsonData = responseBody.string()
                         requireActivity().runOnUiThread {
-                            Toast.makeText(requireContext(), "Error parsing JSON", Toast.LENGTH_SHORT).show()
+                            parseDirectionsJson(jsonData)
+                        }
+                    } ?: run {
+                        requireActivity().runOnUiThread {
+                            Toast.makeText(requireContext(), "Response body is null", Toast.LENGTH_SHORT).show()
                         }
                     }
-                } ?: run {
+                } else {
                     requireActivity().runOnUiThread {
-                        Toast.makeText(requireContext(), "Response body is null", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Response not successful: ${response.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         })
     }
 
+    private fun parseDirectionsJson(jsonData: String) {
+        try {
+            val jsonObject = JSONObject(jsonData)
+            val routes = jsonObject.getJSONArray("routes")
+
+            if (routes.length() > 0) {
+                val route = routes.getJSONObject(0)
+                val legs = route.getJSONArray("legs")
+                steps.clear()  // Clear previous steps
+
+                // Get the duration and display it
+                val duration = legs.getJSONObject(0).getJSONObject("duration")
+                val durationText = duration.getString("text") // e.g., "30 mins"
+                textViewDirection.text = "Estimated travel time: $durationText\n" // Set estimated time in TextView
+
+                for (i in 0 until legs.length()) {
+                    val stepArray = legs.getJSONObject(i).getJSONArray("steps")
+                    for (j in 0 until stepArray.length()) {
+                        val step = stepArray.getJSONObject(j)
+                        val instruction = step.getString("html_instructions").replace("<[^>]*>".toRegex(), "") // Remove HTML tags
+                        steps.add(instruction)  // Add instructions to the list
+                    }
+                }
+
+                // Start navigating by giving the first instruction
+                if (steps.isNotEmpty()) {
+                    textViewDirection.append(steps[currentStep])  // Set the first direction
+                    speakOut(steps[currentStep])  // Voice direction
+                }
+
+                // Draw the polyline on the map
+                val points = decodePoly(route.getJSONObject("overview_polyline").getString("points"))
+                drawPolyline(points)
+            } else {
+                requireActivity().runOnUiThread {
+                    Toast.makeText(requireContext(), "No routes found", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } catch (e: JSONException) {
+            requireActivity().runOnUiThread {
+                Toast.makeText(requireContext(), "Error parsing JSON: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
 
-    private fun requestLocationPermissions() {
-        ActivityCompat.requestPermissions(
-            requireActivity(),
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-            LOCATION_PERMISSION_REQUEST_CODE
-        )
+    private fun drawPolyline(points: List<LatLng>) {
+        if (::map.isInitialized && points.isNotEmpty()) {
+            val polylineOptions = PolylineOptions()
+                .addAll(points)
+                .width(12f)  // Increase the width
+                .color(Color.RED)  // Change to a more visible color
+                .geodesic(true)
+
+            // Add the polyline to the map
+            map.addPolyline(polylineOptions)
+
+            // Move the camera to the starting point of the route
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(points[0], 15f))
+        }
+    }
+
+    private fun speakOut(text: String) {
+        if (text.isNotEmpty()) {
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)  // Speak the direction
+        }
+    }
+
+    private fun onLocationUpdate(location: Location) {
+        // Update the user's current location on the map (if needed)
+        val currentLatLng = LatLng(location.latitude, location.longitude)
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 22f)) // Zoom in closer to the user's location
+
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        map = googleMap
+        map.uiSettings.isZoomControlsEnabled = true  // Enable zoom controls
+        checkLocationPermission()  // Check for location permission and enable user location
+    }
+
+    private fun checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            map.isMyLocationEnabled = true
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                location?.let {
+                    onLocationUpdate(it)  // Update the user's location
+                }
+            }
+        } else {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            checkLocationPermission()  // Retry checking location permission
+        }
+    }
+    private fun decodePoly(encoded: String): List<LatLng> {
+        val poly = ArrayList<LatLng>()
+        var index = 0
+        val len = encoded.length
+        var lat = 0
+        var lng = 0
+
+        while (index < len) {
+            var b: Int
+            var shift = 0
+            var result = 0
+
+            do {
+                b = encoded[index++].toInt() - 63
+                result = result or ((b and 0x1f) shl shift)
+                shift += 5
+            } while (b >= 0x20)
+            val dlat = if (result and 1 != 0) -(result shr 1) else (result shr 1)
+            lat += dlat
+
+            shift = 0
+            result = 0
+            do {
+                b = encoded[index++].toInt() - 63
+                result = result or ((b and 0x1f) shl shift)
+                shift += 5
+            } while (b >= 0x20)
+            val dlng = if (result and 1 != 0) -(result shr 1) else (result shr 1)
+            lng += dlng
+
+            val latLng = LatLng((lat.toDouble() / 1E5), (lng.toDouble() / 1E5))
+            poly.add(latLng)
+        }
+        return poly
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (::tts.isInitialized) {
+            tts.stop()  // Stop Text-to-Speech if initialized
+            tts.shutdown()  // Shutdown the TTS instance
+        }
     }
 }
-
-
 
 

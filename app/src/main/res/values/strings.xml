@@ -1,16 +1,14 @@
 <resources>
-    <string name="app_name">OPSC7312 PoE Part 2 - Code</string>
+    <string name="app_name">Dental Diary</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_title">Dental Diary</string>
+    <string name="nav_header_subtitle">Dentistry App</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
+
 
     <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
-    <string name="change_language">Change Language:</string>
+ <string name="change_language">Change Language:</string>
     <string name="change_address">Change Address:</string>
     <string name="settings" translatable="false">Settings</string>
     <string name="change_distance_units">Change Distance Units:</string>

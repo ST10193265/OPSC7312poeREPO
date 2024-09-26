@@ -1,33 +1,28 @@
 package com.example.opsc7312poepart2_code.ui.register_client
 
-import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.text.InputType
+import android.util.Base64
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.TextView
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import com.example.opsc7312poepart2_code.ui.login_client.LoginClientViewModel
+import androidx.navigation.fragment.findNavController
 import com.example.poe2.R
 import com.example.poe2.databinding.FragmentRegisterClientBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import android.util.Log
-import android.widget.ImageButton
-import com.google.firebase.FirebaseApp
+import java.security.MessageDigest
+import java.security.SecureRandom
 
 class RegisterClientFragment : Fragment() {
     private var _binding: FragmentRegisterClientBinding? = null
     private val binding get() = _binding!!
-
-    private val loginViewModel: LoginClientViewModel by lazy {
-        ViewModelProvider(requireActivity()).get(LoginClientViewModel::class.java)
-    }
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
@@ -52,12 +47,11 @@ class RegisterClientFragment : Fragment() {
         val iconViewPassword = binding.ibtnVisiblePassword
 
         // Initialize Firebase
-        FirebaseApp.initializeApp(requireContext())
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
         dbReference = database.getReference("clients") // Change to "clients"
 
-        btnCancel.setOnClickListener{
+        btnCancel.setOnClickListener {
             clearFields(
                 binding.etxtName,
                 binding.etxtSurname,
@@ -69,8 +63,6 @@ class RegisterClientFragment : Fragment() {
         }
 
         btnRegister.setOnClickListener {
-            //Log.d("RegisterClient", "Button clicked")
-
             val name = editName.text.toString().trim()
             val surname = editSurname.text.toString().trim()
             val email = editEmail.text.toString().trim()
@@ -78,13 +70,9 @@ class RegisterClientFragment : Fragment() {
             val password = editPassword.text.toString().trim()
             val phoneNumber = editPhoneNumber.text.toString().trim()
 
-           // Log.d("RegisterClient", "Captured Inputs - Name: $name, Email: $email")
-
             if (isValidInput(name, surname, email, username, password, phoneNumber)) {
-               // Log.d("RegisterClient", "Valid Input")
                 registerUser(name, surname, email, username, password, phoneNumber)
             } else {
-              //  Log.d("RegisterClient", "Invalid Input")
                 Toast.makeText(requireContext(), "Please fill all fields correctly.", Toast.LENGTH_SHORT).show()
             }
         }
@@ -126,14 +114,15 @@ class RegisterClientFragment : Fragment() {
         password: String,
         phoneNumber: String
     ) {
-//        Log.d("RegisterClient", "Inside registerUser")
-
         val userId = dbReference.push().key
         if (userId == null) {
-//            Log.e("RegisterClient", "Failed to generate user ID")
             Toast.makeText(requireContext(), "Failed to generate user ID", Toast.LENGTH_SHORT).show()
             return
         }
+
+        // Hash and salt the password
+        val salt = generateSalt()
+        val hashedPassword = hashPassword(password, salt)
 
         val user = hashMapOf(
             "userId" to userId,
@@ -141,12 +130,10 @@ class RegisterClientFragment : Fragment() {
             "surname" to surname,
             "email" to email,
             "username" to username,
-            "password" to password, // In a real app, do not store plaintext passwords
+            "password" to hashedPassword, // Store the hashed password
+            "salt" to Base64.encodeToString(salt, Base64.DEFAULT), // Store the salt
             "phoneNumber" to phoneNumber
         )
-
-//        Log.d("RegisterClient", "Saving user with ID: $userId")
-//        Log.d("RegisterClient", "User data: $user")
 
         try {
             // Save user to Firebase Database under the "clients" node
@@ -161,16 +148,26 @@ class RegisterClientFragment : Fragment() {
                         binding.etxtPassword,
                         binding.etxtPhoneNumber
                     )
-
+                    findNavController().navigate(R.id.action_nav_register_client_to_nav_login_client)
                 }
                 .addOnFailureListener { exception ->
                     Toast.makeText(requireContext(), "Error saving data: ${exception.message}", Toast.LENGTH_SHORT).show()
                 }
-
         } catch (e: Exception) {
-           // Log.e("RegisterClient", "Exception: ${e.message}")
             Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun generateSalt(): ByteArray {
+        val salt = ByteArray(16)
+        SecureRandom().nextBytes(salt)
+        return salt
+    }
+
+    private fun hashPassword(password: String, salt: ByteArray): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        digest.update(salt)
+        return Base64.encodeToString(digest.digest(password.toByteArray()), Base64.DEFAULT)
     }
 
     private fun clearFields(vararg editTexts: EditText) {

@@ -1,8 +1,8 @@
 package com.example.opsc7312poepart2_code.ui.register_dentist
 
-import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.text.InputType
+import android.util.Base64
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,22 +11,19 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import com.example.opsc7312poepart2_code.ui.login_dentist.LoginDentistViewModel
+import androidx.navigation.fragment.findNavController
 import com.example.poe2.R
+import com.example.poe2.databinding.FragmentRegisterClientBinding
 import com.example.poe2.databinding.FragmentRegisterDentistBinding
-import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import java.security.MessageDigest
+import java.security.SecureRandom
 
 class RegisterDentistFragment : Fragment() {
-
     private var _binding: FragmentRegisterDentistBinding? = null
     private val binding get() = _binding!!
-
-    private val loginViewModel: LoginDentistViewModel by lazy {
-        ViewModelProvider(requireActivity()).get(LoginDentistViewModel::class.java)
-    }
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
@@ -41,8 +38,8 @@ class RegisterDentistFragment : Fragment() {
         val root: View = binding.root
 
         val editName = binding.etxtName
-        val editEmail = binding.etxtEmail
         val editAddress = binding.etxtAddress
+        val editEmail = binding.etxtEmail
         val editUsername = binding.etxtUsername
         val editPassword = binding.etxtPassword
         val editPhoneNumber = binding.etxtPhoneNumber
@@ -51,19 +48,18 @@ class RegisterDentistFragment : Fragment() {
         val iconViewPassword = binding.ibtnVisiblePassword
 
         // Initialize Firebase
-        FirebaseApp.initializeApp(requireContext())
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
-        dbReference = database.getReference("dentists") // Change to "dentists"
+        dbReference = database.getReference("dentists") // Change to "clients"
 
         btnCancel.setOnClickListener {
             clearFields(
-                editName,
-                editEmail,
-                editAddress,
-                editUsername,
-                editPassword,
-                editPhoneNumber
+                binding.etxtName,
+                binding.etxtAddress,
+                binding.etxtEmail,
+                binding.etxtUsername,
+                binding.etxtPassword,
+                binding.etxtPhoneNumber
             )
         }
 
@@ -125,18 +121,23 @@ class RegisterDentistFragment : Fragment() {
             return
         }
 
+        // Hash and salt the password
+        val salt = generateSalt()
+        val hashedPassword = hashPassword(password, salt)
+
         val user = hashMapOf(
             "userId" to userId,
             "name" to name,
             "address" to address,
             "email" to email,
             "username" to username,
-            "password" to password, // In a real app, do not store plaintext passwords
+            "password" to hashedPassword, // Store the hashed password
+            "salt" to Base64.encodeToString(salt, Base64.DEFAULT), // Store the salt
             "phoneNumber" to phoneNumber
         )
 
         try {
-            // Save user to Firebase Database under the "dentists" node
+            // Save user to Firebase Database under the "clients" node
             dbReference.child(userId).setValue(user)
                 .addOnSuccessListener {
                     Toast.makeText(requireContext(), "Data saved successfully!", Toast.LENGTH_SHORT).show()
@@ -144,19 +145,30 @@ class RegisterDentistFragment : Fragment() {
                         binding.etxtName,
                         binding.etxtAddress,
                         binding.etxtEmail,
-                        binding.etxtPhoneNumber,
                         binding.etxtUsername,
-                        binding.etxtUsername,
-                        binding.etxtPassword
+                        binding.etxtPassword,
+                        binding.etxtPhoneNumber
                     )
+                    findNavController().navigate(R.id.action_nav_register_dentist_to_nav_login_dentist)
                 }
                 .addOnFailureListener { exception ->
                     Toast.makeText(requireContext(), "Error saving data: ${exception.message}", Toast.LENGTH_SHORT).show()
                 }
-
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun generateSalt(): ByteArray {
+        val salt = ByteArray(16)
+        SecureRandom().nextBytes(salt)
+        return salt
+    }
+
+    private fun hashPassword(password: String, salt: ByteArray): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        digest.update(salt)
+        return Base64.encodeToString(digest.digest(password.toByteArray()), Base64.DEFAULT)
     }
 
     private fun clearFields(vararg editTexts: EditText) {
@@ -171,12 +183,12 @@ class RegisterDentistFragment : Fragment() {
             // Hide password
             editPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             // Update icon to indicate hidden state
-            iconViewPassword.setImageResource(R.drawable.visible_icon) // Update to your hidden icon
+            iconViewPassword.setImageResource(R.drawable.visible_icon)
         } else {
             // Show password
             editPassword.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
             // Update icon to indicate visible state
-            iconViewPassword.setImageResource(R.drawable.visible_icon) // Update to your visible icon
+            iconViewPassword.setImageResource(R.drawable.visible_icon)
         }
         // Move the cursor to the end of the text
         editPassword.setSelection(editPassword.text.length)

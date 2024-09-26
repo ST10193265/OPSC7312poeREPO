@@ -34,6 +34,15 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.action_nav_home_to_nav_register_dentist)
         }
 
+        binding.btnLoginClient.setOnClickListener {
+            // Navigate to the Client Register fragment
+            findNavController().navigate(R.id.action_nav_home_to_nav_login_client)
+        }
+
+        binding.btnLoginDentist.setOnClickListener{
+            findNavController().navigate(R.id.action_nav_home_to_nav_login_dentist)
+        }
+
         // Return the root view
         return root
     }

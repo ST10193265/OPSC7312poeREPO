@@ -75,6 +75,14 @@ android {
         testImplementation(libs.junit)
         androidTestImplementation(libs.androidx.junit.v115)
         androidTestImplementation(libs.androidx.espresso.core.v351)
+
+
+            implementation ("com.google.firebase:firebase-auth-ktx:21.0.3") // Update version if needed
+            implementation ("com.google.android.gms:play-services-auth:20.4.1") // Update version if needed
+
+
+
+
     }
 }
 dependencies {

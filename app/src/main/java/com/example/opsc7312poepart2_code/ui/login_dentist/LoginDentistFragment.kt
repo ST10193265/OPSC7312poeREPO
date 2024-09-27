@@ -9,8 +9,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -71,7 +69,7 @@ class LoginDentistFragment : Fragment() {
 
         // Set click listener for the password visibility icon
         binding.iconViewPassword.setOnClickListener {
-            togglePasswordVisibility(it) // Call the method without parameters
+            togglePasswordVisibility() // Call the method without parameters
         }
 
         // Handle Forget Password text click
@@ -82,8 +80,8 @@ class LoginDentistFragment : Fragment() {
         return root
     }
 
-    fun onForgotPasswordClicked(view: View) {
-        // Handle the action
+    private fun onForgotPasswordClicked(view: View) {
+        // Navigate to the forget password fragment
         findNavController().navigate(R.id.action_nav_login_dentist_to_nav_forget_password_dentist)
     }
 
@@ -104,9 +102,9 @@ class LoginDentistFragment : Fragment() {
                 if (snapshot.exists()) {
                     val userSnapshot = snapshot.children.first()
                     val storedHashedPassword = userSnapshot.child("password").getValue(String::class.java) ?: ""
-                    val storedSalt = userSnapshot.child("salt").getValue(String::class.java)
+                    val storedSalt = userSnapshot.child("salt").getValue(String::class.java) ?: ""
 
-                    if (storedSalt == null) {
+                    if (storedSalt.isEmpty()) {
                         Log.e("LoginDentistFragment", "Salt is missing for user: $username")
                         Toast.makeText(requireContext(), "Error: Salt is missing.", Toast.LENGTH_SHORT).show()
                         return
@@ -151,7 +149,7 @@ class LoginDentistFragment : Fragment() {
         return Base64.encodeToString(digest.digest(password.toByteArray()), Base64.DEFAULT)
     }
 
-    fun togglePasswordVisibility(view: View) {
+    private fun togglePasswordVisibility() {
         passwordVisible = !passwordVisible
 
         if (passwordVisible) {

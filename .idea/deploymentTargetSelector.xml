@@ -19,7 +19,7 @@
       <SelectionState runConfigName="ClientSettingsTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="RegisterClientTest">
+      <SelectionState runConfigName="RegisterDentistTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

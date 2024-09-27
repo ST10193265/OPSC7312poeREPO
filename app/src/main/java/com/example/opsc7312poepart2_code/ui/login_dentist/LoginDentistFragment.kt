@@ -149,8 +149,6 @@ class LoginDentistFragment : Fragment() {
         return Base64.encodeToString(digest.digest(password.toByteArray()), Base64.DEFAULT)
     }
 
-
-    // Change the access modifier to public
     fun togglePasswordVisibility(view: View) {
         passwordVisible = !passwordVisible
 
@@ -167,6 +165,8 @@ class LoginDentistFragment : Fragment() {
         // Move the cursor to the end of the text
         binding.etxtPassword.setSelection(binding.etxtPassword.text.length)
     }
+
+
     private fun saveLoginStatus() {
         val editor = sharedPreferences.edit()
         editor.putBoolean("isLoggedIn", true)

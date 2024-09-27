@@ -80,7 +80,7 @@ class LoginClientFragment : Fragment() {
     }
 
     // Method for "Forgot Password" button click
-    public fun onForgotPasswordClicked(view: View) {
+    fun onForgotPasswordClicked(view: View) {
         // Navigate to ForgetPasswordFragment
         findNavController().navigate(R.id.action_nav_login_client_to_nav_forget_password_client) // Ensure the correct action ID
     }

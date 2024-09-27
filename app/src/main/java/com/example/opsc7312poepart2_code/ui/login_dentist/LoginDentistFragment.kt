@@ -1,5 +1,6 @@
 package com.example.opsc7312poepart2_code.ui.login_dentist
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.InputType
 import android.util.Base64
@@ -12,6 +13,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.opsc7312poepart2_code.ui.login_client.LoginClientFragment.Companion.loggedInClientUsername
 import com.example.poe2.R
 import com.example.poe2.databinding.FragmentLoginDentistBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -32,8 +34,11 @@ class LoginDentistFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private var passwordVisible = false // Password visibility state
 
+    private lateinit var sharedPreferences: SharedPreferences
+
     companion object {
         var loggedInDentistUsername: String? = null // Global variable to store the logged-in username
+        var loggedInDentistUserId: String? = null // Global variable to store the logged-in user ID
     }
 
     override fun onCreateView(
@@ -103,7 +108,8 @@ class LoginDentistFragment : Fragment() {
                     // Compare the hashed password with the stored hashed password
                     if (hashedPassword == storedHashedPassword) {
                         loggedInDentistUsername = username // Store the logged-in username
-                        Log.i("Logged in user", "Login successful for user: $username")
+                        saveLoginStatus()
+                        Log.i("Logged in user", "Login successful for user: $username with ID: $loggedInDentistUserId")
                         Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
                         clearFields()
                         findNavController().navigate(R.id.action_nav_login_dentist_to_nav_menu_dentist)
@@ -142,5 +148,12 @@ class LoginDentistFragment : Fragment() {
 
         // Move the cursor to the end of the text
         editPassword.setSelection(editPassword.text.length)
+    }
+
+    private fun saveLoginStatus() {
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("isLoggedIn", true)
+        editor.putString("username", loggedInClientUsername)
+        editor.apply()
     }
 }

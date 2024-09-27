@@ -27,7 +27,9 @@ android {
             )
         }
     }
-
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -71,11 +73,36 @@ android {
         // Utilities
         implementation(libs.android.maps.utils)
 
-        // Testing
-        testImplementation(libs.junit)
-        androidTestImplementation(libs.androidx.junit.v115)
-        androidTestImplementation(libs.androidx.espresso.core.v351)
+
+        // AndroidX Test dependencies
+        androidTestImplementation ("androidx.test.ext:junit:1.1.5")
+        androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
+
+        // Fragment testing
+        debugImplementation ("androidx.fragment:fragment-testing:1.6.1")
+
+        // JUnit
+        testImplementation ("junit:junit:4.13.2")
+
+        // Mocking framework (optional, useful for mocking dependencies)
+        testImplementation ("org.mockito:mockito-core:5.4.0")
+
+        // Coroutines (if you are using coroutines in your app)
+        testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+        // Firebase testing
+        androidTestImplementation ("com.google.firebase:firebase-database:20.4.0")
+        androidTestImplementation ("com.google.firebase:firebase-database-ktx:20.4.0")
+
+
+        androidTestImplementation ("org.mockito:mockito-android:5.4.0")
+        // For ActivityTestRule
+        androidTestImplementation ("androidx.test:runner:1.5.1")
+        androidTestImplementation ("androidx.test:rules:1.5.0")
+        androidTestImplementation ("androidx.navigation:navigation-testing:2.5.3")
+        testImplementation ("io.mockk:mockk:1.12.3")
+
     }
+
 }
 dependencies {
     implementation(libs.places)
@@ -83,6 +110,10 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.fragment.testing)
+    androidTestImplementation(libs.junit.junit)
+    androidTestImplementation(libs.junit.junit)
+
 }
 
 

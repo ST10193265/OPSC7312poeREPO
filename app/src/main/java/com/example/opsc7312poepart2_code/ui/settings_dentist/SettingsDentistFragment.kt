@@ -47,6 +47,99 @@ class SettingsDentistFragment : Fragment() {
     private var placeSuggestions: List<String> = emptyList()
     private var isAddressValid = false
 
+    // Getters and setters for the fields
+    fun getSpinnerLanguageD(): Spinner {
+        return spinnerLanguageD
+    }
+
+    fun setSpinnerLanguageD(spinner: Spinner) {
+        this.spinnerLanguageD = spinner
+    }
+
+    fun getEtAddress(): AutoCompleteTextView {
+        return etAddress
+    }
+
+    fun setEtAddress(autoCompleteTextView: AutoCompleteTextView) {
+        this.etAddress = autoCompleteTextView
+    }
+
+    fun getEtPhoneD(): EditText {
+        return etPhoneD
+    }
+
+    fun setEtPhoneD(editText: EditText) {
+        this.etPhoneD = editText
+    }
+
+    fun getBtnSaveD(): Button {
+        return btnSaveD
+    }
+
+    fun setBtnSaveD(button: Button) {
+        this.btnSaveD = button
+    }
+
+    fun getBtnCancelD(): Button {
+        return btnCancelD
+    }
+
+    fun setBtnCancelD(button: Button) {
+        this.btnCancelD = button
+    }
+
+    fun getIbtnHomeD(): ImageButton {
+        return ibtnHomeD
+    }
+
+    fun setIbtnHomeD(imageButton: ImageButton) {
+        this.ibtnHomeD = imageButton
+    }
+
+    fun getDatabase(): DatabaseReference {
+        return database
+    }
+
+    fun setDatabase(databaseReference: DatabaseReference) {
+        this.database = databaseReference
+    }
+
+    fun getPlacesClient(): PlacesClient {
+        return placesClient
+    }
+
+    fun setPlacesClient(placesClient: PlacesClient) {
+        this.placesClient = placesClient
+    }
+
+    fun getDestinationLatLng(): LatLng? {
+        return destinationLatLng
+    }
+
+    fun setDestinationLatLng(latLng: LatLng?) {
+        this.destinationLatLng = latLng
+    }
+
+    fun getApiKey(): String {
+        return apiKey
+    }
+
+    fun getPlaceSuggestions(): List<String> {
+        return placeSuggestions
+    }
+
+    fun setPlaceSuggestions(suggestions: List<String>) {
+        this.placeSuggestions = suggestions
+    }
+
+    fun isAddressValid(): Boolean {
+        return isAddressValid
+    }
+
+    fun setAddressValid(isValid: Boolean) {
+        this.isAddressValid = isValid
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -218,7 +311,7 @@ class SettingsDentistFragment : Fragment() {
         }
     }
 
-    private fun loadLanguagePreference() {
+    fun loadLanguagePreference() {
         database.child("Dentists/settings/language").get()
             .addOnSuccessListener { dataSnapshot ->
                 val language = dataSnapshot.value as? String ?: "en"

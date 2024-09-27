@@ -7,16 +7,12 @@ import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
-import android.text.Editable
-import android.text.Html
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Spinner
@@ -34,32 +30,31 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
-import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import okhttp3.*
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import java.util.ArrayList
 import java.util.Locale
 
 class MapsClientFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var spinnerDentists: Spinner
-    private lateinit var btnGoNow: Button
+   private lateinit var btnGoNow: Button
     private lateinit var map: GoogleMap
-    private var destinationLatLng: LatLng? = null
+    private  var destinationLatLng: LatLng? = null
     private val apiKey = BuildConfig.MAPS_API_KEY
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
     private lateinit var mapFragment: SupportMapFragment
@@ -67,6 +62,25 @@ class MapsClientFragment : Fragment(), OnMapReadyCallback {
     private lateinit var tts: TextToSpeech  // Text-to-Speech instance
     private var currentStep: Int = 0
     private val steps = mutableListOf<String>()  // Store directions steps
+
+
+    fun setDestinationLatLng(latLng: LatLng) {
+        this.destinationLatLng = latLng
+    }
+    fun getSpinnerDentists(): Spinner {
+        return spinnerDentists
+    }
+
+    fun getBtnGoNow(): Button {
+        return btnGoNow
+    }
+
+    fun getTextViewDirection(): TextView {
+        return textViewDirection
+    }
+    fun getDestinationLatLng(latLng: LatLng): LatLng? {
+        return destinationLatLng
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -118,7 +132,7 @@ class MapsClientFragment : Fragment(), OnMapReadyCallback {
         return view
     }
 
-    private fun fetchDentistData() {
+    fun fetchDentistData() {
         val dentistList = mutableListOf<String>()
         val addressMap = mutableMapOf<String, String>()
         val database = FirebaseDatabase.getInstance()
@@ -159,7 +173,7 @@ class MapsClientFragment : Fragment(), OnMapReadyCallback {
         })
     }
 
-    private fun findPlace(addressString: String) {
+    fun findPlace(addressString: String) {
         val geocoder = Geocoder(requireContext())
         try {
             val addressList = geocoder.getFromLocationName(addressString, 1)
@@ -180,7 +194,7 @@ class MapsClientFragment : Fragment(), OnMapReadyCallback {
             Toast.makeText(requireContext(), "Geocoder service is not available", Toast.LENGTH_SHORT).show()
         }
     }
-    private fun getDirections(destination: LatLng) {
+    fun getDirections(destination: LatLng) {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestLocationPermissions()
             return
@@ -201,17 +215,17 @@ class MapsClientFragment : Fragment(), OnMapReadyCallback {
     }
 
 
-    private fun requestLocationPermissions() {
+    fun requestLocationPermissions() {
         ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
     }
 
-    private fun buildDirectionsUrl(origin: LatLng, destination: LatLng): String {
+    fun buildDirectionsUrl(origin: LatLng, destination: LatLng): String {
         val str_origin = "origin=${origin.latitude},${origin.longitude}"
         val str_dest = "destination=${destination.latitude},${destination.longitude}"
         val sensor = "sensor=false"
         return "https://maps.googleapis.com/maps/api/directions/json?$str_origin&$str_dest&$sensor&key=$apiKey"
     }
-    private fun fetchDirections(url: String) {
+    fun fetchDirections(url: String) {
         val client = OkHttpClient()
         val request = Request.Builder().url(url).build()
         client.newCall(request).enqueue(object : Callback {
@@ -242,7 +256,7 @@ class MapsClientFragment : Fragment(), OnMapReadyCallback {
         })
     }
 
-    private fun parseDirectionsJson(jsonData: String) {
+    fun parseDirectionsJson(jsonData: String) {
         try {
             val jsonObject = JSONObject(jsonData)
             val routes = jsonObject.getJSONArray("routes")

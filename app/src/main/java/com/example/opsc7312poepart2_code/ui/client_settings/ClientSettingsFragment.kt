@@ -35,6 +35,71 @@ class ClientSettingsFragment : Fragment() {
     private lateinit var ibtnHome: ImageButton
     private lateinit var database: DatabaseReference
 
+    // Getter and Setter methods for UI components
+    fun getSpinnerLanguage(): Spinner {
+        return spinnerLanguage
+    }
+
+    fun setSpinnerLanguage(spinner: Spinner) {
+        this.spinnerLanguage = spinner
+    }
+
+    fun getSpinnerDistanceUnits(): Spinner {
+        return spinnerDistanceUnits
+    }
+
+    fun setSpinnerDistanceUnits(spinner: Spinner) {
+        this.spinnerDistanceUnits = spinner
+    }
+
+    fun getSpinnerDistanceRadius(): Spinner {
+        return spinnerDistanceRadius
+    }
+
+    fun setSpinnerDistanceRadius(spinner: Spinner) {
+        this.spinnerDistanceRadius = spinner
+    }
+
+    fun getEtEmail(): EditText {
+        return etEmail
+    }
+
+    fun setEtEmail(editText: EditText) {
+        this.etEmail = editText
+    }
+
+    fun getEtPhone(): EditText {
+        return etPhone
+    }
+
+    fun setEtPhone(editText: EditText) {
+        this.etPhone = editText
+    }
+
+    fun getBtnSave(): Button {
+        return btnSave
+    }
+
+    fun setBtnSave(button: Button) {
+        this.btnSave = button
+    }
+
+    fun getBtnCancel(): Button {
+        return btnCancel
+    }
+
+    fun setBtnCancel(button: Button) {
+        this.btnCancel = button
+    }
+
+    fun getIbtnHome(): ImageButton {
+        return ibtnHome
+    }
+
+    fun setIbtnHome(button: ImageButton) {
+        this.ibtnHome = button
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -161,7 +226,7 @@ class ClientSettingsFragment : Fragment() {
     }
 
 
-    private fun loadSettings() {
+    fun loadSettings() {
         val clientId = "-O79y5XftzGBuX4w0_UU" // Dynamic ID needed
         database.child("clients/$clientId").get()
             .addOnSuccessListener { dataSnapshot ->

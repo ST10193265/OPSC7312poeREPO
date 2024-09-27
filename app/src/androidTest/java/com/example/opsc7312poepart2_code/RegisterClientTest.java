@@ -2,6 +2,8 @@ package com.example.opsc7312poepart2_code;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertEquals;
@@ -23,8 +25,8 @@ import org.junit.runner.RunWith;
 import com.example.opsc7312poepart2_code.ui.register_client.RegisterClientFragment;
 import com.example.poe2.MainActivity;
 import com.example.poe2.R;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 @RunWith(AndroidJUnit4.class)
 public class RegisterClientTest {
@@ -59,15 +61,25 @@ public class RegisterClientTest {
     @Test
     public void testSuccessfulRegistration() {
         // Simulate entering registration details
-        onView(withId(R.id.etxtName)).perform(typeText("John"));
-        onView(withId(R.id.etxtSurname)).perform(typeText("Doe"));
-        onView(withId(R.id.etxtEmail)).perform(typeText("johndoe@example.com"));
-        onView(withId(R.id.etxtUsername)).perform(typeText("johndoe"));
-        onView(withId(R.id.etxtPassword)).perform(typeText("testPassword"));
-        onView(withId(R.id.etxtPhoneNumber)).perform(typeText("1234567890"));
+        onView(withId(R.id.etxtName)).perform(typeText("John"), closeSoftKeyboard());
+        onView(withId(R.id.etxtSurname)).perform(typeText("Doe"), closeSoftKeyboard());
+        onView(withId(R.id.etxtEmail)).perform(typeText("johndoe@example.com"), closeSoftKeyboard());
+        onView(withId(R.id.etxtPhoneNumber)).perform(typeText("1234567890"), closeSoftKeyboard());
+        onView(withId(R.id.etxtUsername)).perform(typeText("johndoe"), closeSoftKeyboard());
+        onView(withId(R.id.etxtPassword)).perform(replaceText("testPassword"), closeSoftKeyboard());
+
+
 
         // Click the register button
         onView(withId(R.id.btnRegister)).perform(click());
+
+        // Add a delay to wait for the registration process to complete
+        // Alternatively, you can use IdlingResource for better synchronization
+        try {
+            Thread.sleep(2000); // Wait for the registration process to complete
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         // Verify that the user is navigated to the login screen after successful registration
         fragmentScenario.onFragment(fragment -> {

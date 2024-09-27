@@ -78,19 +78,16 @@
 
         <TextView
             android:id="@+id/txtForgotPassword"
-            android:layout_width="194dp"
-            android:layout_height="41dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="268dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:onClick="onForgotPasswordClicked"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Forgot Password"
             android:textColor="@color/blue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintHorizontal_bias="0.743"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.589" />
 
         <EditText
             android:id="@+id/etxtUsername"

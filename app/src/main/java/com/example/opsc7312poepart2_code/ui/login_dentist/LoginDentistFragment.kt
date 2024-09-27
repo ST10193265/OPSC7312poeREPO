@@ -83,8 +83,8 @@ class LoginDentistFragment : Fragment() {
     }
 
     fun onForgotPasswordClicked(view: View) {
-        // Navigate to ForgetPasswordFragment
-        findNavController().navigate(R.id.action_nav_login_dentist_to_nav_forget_password_dentist) // Ensure the correct action ID
+        // Handle the action
+        findNavController().navigate(R.id.action_nav_login_dentist_to_nav_forget_password_dentist)
     }
 
     override fun onDestroyView() {

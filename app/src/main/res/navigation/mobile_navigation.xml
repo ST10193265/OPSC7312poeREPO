@@ -25,7 +25,15 @@
             app:destination="@id/nav_login_dentist" />
     </fragment>
 
-
+    <fragment
+        android:id="@+id/nav_forget_password_client"
+        android:name="com.example.opsc7312poepart2_code.ui.forget_password_client.ForgetPasswordClientFragment"
+        android:label="Forget Password - Client"
+        tools:layout="@layout/fragment_forget_password_client">
+        <action
+            android:id="@+id/action_nav_forget_password_client_to_nav_login_client"
+            app:destination="@id/nav_login_client" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_register_client"
@@ -65,7 +73,13 @@
         <action
             android:id="@+id/action_nav_login_client_to_nav_menu_client"
             app:destination="@id/nav_menu_client" />
+        <action
+            android:id="@+id/action_nav_login_client_to_nav_forget_password_client"
+            app:destination="@id/nav_forget_password_client" />
     </fragment>
+
+
+
 
     <fragment
         android:id="@+id/nav_menu_client"

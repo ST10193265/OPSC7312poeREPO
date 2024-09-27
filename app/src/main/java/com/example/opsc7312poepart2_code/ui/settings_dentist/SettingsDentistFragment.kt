@@ -231,8 +231,6 @@ class SettingsDentistFragment : Fragment() {
         }
     }
 
-
-
     private fun updateSettings(dentistId: String, updatedData: Map<String, Any>) {
         val selectedLanguage = spinnerLanguageD.selectedItem.toString()
         database.child("dentists/$dentistId").updateChildren(updatedData)

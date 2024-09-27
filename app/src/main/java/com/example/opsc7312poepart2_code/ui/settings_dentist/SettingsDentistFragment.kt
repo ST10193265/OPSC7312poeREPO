@@ -19,6 +19,7 @@ import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.example.opsc7312poepart2_code.ui.login_dentist.LoginDentistFragment
 import com.example.poe2.BuildConfig
 import com.example.poe2.R
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -197,11 +198,8 @@ class SettingsDentistFragment : Fragment() {
         val selectedLanguage = spinnerLanguageD.selectedItem.toString()
         val updatedData = mutableMapOf<String, Any>()
 
-
         if (selectedLanguage.isNotEmpty()) {
-
-                updatedData["language"] = selectedLanguage
-
+            updatedData["language"] = selectedLanguage
         }
 
         // Validate and update address
@@ -221,17 +219,18 @@ class SettingsDentistFragment : Fragment() {
             updatedData["phoneNumber"] = phoneNumber
         }
 
-        // Dentist ID (this should be dynamic or fetched accordingly)
-        val dentistId = "-O7EXMfOE2RETTbxNHTt"
+        // Dentist ID (using the dynamically fetched ID from the logged-in user)
+        val dentistId = LoginDentistFragment.loggedInDentistUsername
 
         // Update data in Firebase if there's any change
-        if (updatedData.isNotEmpty()) {
+        if (dentistId != null && updatedData.isNotEmpty()) {
             updateSettings(dentistId, updatedData)
         } else {
             Toast.makeText(requireContext(), "No changes made!", Toast.LENGTH_SHORT).show()
             navigateToHome()
         }
     }
+
 
 
     private fun updateSettings(dentistId: String, updatedData: Map<String, Any>) {

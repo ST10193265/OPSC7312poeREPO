@@ -15,9 +15,9 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.poe2.R
 import com.example.poe2.databinding.FragmentLoginClientBinding
-import com.google.android.gms.auth.api.signin.GoogleSignIn
+
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
+
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
@@ -34,7 +34,7 @@ class LoginClientFragment : Fragment() {
     private lateinit var database: FirebaseDatabase
     private lateinit var dbReference: DatabaseReference
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var googleSignInClient: GoogleSignInClient
+
     private lateinit var firebaseAuth: FirebaseAuth
 
     private var passwordVisible = false // Password visibility state
@@ -67,7 +67,6 @@ class LoginClientFragment : Fragment() {
             .requestIdToken(getString(R.string.default_web_client_id)) // Replace with your web client ID
             .requestEmail()
             .build()
-        googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
 
         // Handle login button click
         binding.btnLogin.setOnClickListener {
@@ -83,7 +82,7 @@ class LoginClientFragment : Fragment() {
 
         // Handle Google Sign-In button click
         binding.btnGoogleSignIn.setOnClickListener {
-            signInWithGoogle()
+
         }
 
         // Set the password field to not visible by default
@@ -143,18 +142,7 @@ class LoginClientFragment : Fragment() {
         })
     }
 
-    private fun signInWithGoogle() {
-        val signInIntent = googleSignInClient.signInIntent
-        startActivityForResult(signInIntent, RC_SIGN_IN)
-    }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == RC_SIGN_IN) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            handleSignInResult(task)
-        }
-    }
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {

@@ -1,5 +1,3 @@
-package com.example.opsc7312poepart2_code.ui.register_dentist
-
 import android.os.Bundle
 import android.text.InputType
 import android.util.Base64
@@ -70,23 +68,49 @@ class RegisterDentistFragment : Fragment() {
         val password = binding.etxtPassword.text.toString().trim()
         val phoneNumber = binding.etxtPhoneNumber.text.toString().trim()
 
-        if (isValidInput(name, address, email, username, password, phoneNumber)) {
-            registerUser(name, address, email, username, password, phoneNumber)
-        } else {
-            Toast.makeText(requireContext(), "Please fill all fields correctly.", Toast.LENGTH_SHORT).show()
+        if (!isValidInput(name, address, email, username, password, phoneNumber)) {
+            // Validation failed, no need to proceed with registration
+            return
         }
+
+        // Continue with registration if validation passes
+        registerUser(name, address, email, username, password, phoneNumber)
     }
 
     private fun isValidInput(
         name: String, address: String, email: String, username: String, password: String, phoneNumber: String
     ): Boolean {
-        return name.isNotEmpty() &&
-                address.isNotEmpty() &&
-                email.isNotEmpty() &&
-                android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() &&
-                username.isNotEmpty() &&
-                password.length >= 6 &&
-                phoneNumber.isNotEmpty()
+        if (name.isEmpty()) {
+            showToast("Please enter your name.")
+            return false
+        }
+
+        if (address.isEmpty()) {
+            showToast("Please enter your address.")
+            return false
+        }
+
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            showToast("Please enter a valid email address.")
+            return false
+        }
+
+        if (username.isEmpty()) {
+            showToast("Please enter a username.")
+            return false
+        }
+
+        if (password.length < 6) {
+            showToast("Password must be at least 6 characters long.")
+            return false
+        }
+
+        if (phoneNumber.isEmpty() || !phoneNumber.matches(Regex("^[+]?[0-9]{10,13}\$"))) {
+            showToast("Please enter a valid phone number.")
+            return false
+        }
+
+        return true
     }
 
     private fun registerUser(

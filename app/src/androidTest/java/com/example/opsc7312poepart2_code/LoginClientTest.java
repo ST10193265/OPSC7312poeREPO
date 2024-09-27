@@ -2,6 +2,8 @@ package com.example.opsc7312poepart2_code;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertEquals;
@@ -49,19 +51,28 @@ public class LoginClientTest {
         // Set the NavController for the fragment
         fragmentScenario.onFragment(fragment -> {
             Navigation.setViewNavController(fragment.requireView(), navController);
-            // Mock Firebase database
+            // Mock Firebase database and create test user
             dbReference = FirebaseDatabase.getInstance().getReference("clients");
+            // Add the test user data
+            dbReference.child("testUser").child("password").setValue("testPassword");
         });
     }
 
     @Test
     public void testSuccessfulLogin() {
         // Simulate entering username and password
-        onView(withId(R.id.etxtUsername)).perform(typeText("testUser"));
-        onView(withId(R.id.etxtPassword)).perform(typeText("testPassword"));
+        onView(withId(R.id.etxtUsername)).perform(typeText("johndoe"), closeSoftKeyboard());
+        onView(withId(R.id.etxtPassword)).perform(replaceText("testPassword"), closeSoftKeyboard());
 
         // Click the login button
         onView(withId(R.id.btnLogin)).perform(click());
+
+        // Wait for a short period to allow for navigation to complete
+        try {
+            Thread.sleep(2000); // Wait for 2 seconds (adjust as needed)
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         // Verify that the user is navigated to the menu after successful login
         fragmentScenario.onFragment(fragment -> {
@@ -83,6 +94,4 @@ public class LoginClientTest {
             Log.w("LoginClientTest", "Attempted login with empty fields.");
         });
     }
-
-
 }

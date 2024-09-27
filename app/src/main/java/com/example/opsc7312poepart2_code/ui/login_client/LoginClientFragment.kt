@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.opsc7312poepart2_code.ui.login_dentist.LoginDentistFragment.Companion.loggedInDentistUsername
 import com.example.poe2.R
 import com.example.poe2.databinding.FragmentLoginClientBinding
 import com.google.firebase.database.DataSnapshot
@@ -104,6 +103,7 @@ class LoginClientFragment : Fragment() {
                     // Compare the hashed password with the stored hashed password
                     if (hashedPassword == storedHashedPassword) {
                         loggedInClientUsername = username // Store the logged-in username
+                        getUserIdFromFirebase(username) // Get the user ID
                         saveLoginStatus()
                         Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
                         findNavController().navigate(R.id.action_nav_login_client_to_nav_menu_client)
@@ -117,6 +117,25 @@ class LoginClientFragment : Fragment() {
 
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    // Method to get the user ID from Firebase
+    private fun getUserIdFromFirebase(username: String) {
+        dbReference.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val userSnapshot = snapshot.children.first()
+                    loggedInClientUserId = userSnapshot.key // Get the user ID from Firebase and store it globally
+                    Log.e("LoginDentistFragment", "loggedInClientUserId: $loggedInClientUserId")
+                } else {
+                    Toast.makeText(requireContext(), "User ID not found.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(requireContext(), "Error retrieving user ID: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }

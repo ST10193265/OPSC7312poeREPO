@@ -82,7 +82,6 @@ class LoginDentistFragment : Fragment() {
         return root
     }
 
-
     fun onForgotPasswordClicked(view: View) {
         // Navigate to ForgetPasswordFragment
         findNavController().navigate(R.id.action_nav_login_dentist_to_nav_forget_password_dentist) // Ensure the correct action ID
@@ -122,6 +121,7 @@ class LoginDentistFragment : Fragment() {
                         // Compare the hashed password with the stored hashed password
                         if (hashedPassword == storedHashedPassword) {
                             loggedInDentistUsername = username // Store the logged-in username
+                            loggedInDentistUserId = userSnapshot.key // Store the user ID
                             saveLoginStatus()
                             Log.i("Logged in user", "Login successful for user: $username")
                             Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()

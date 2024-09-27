@@ -3,14 +3,12 @@ package com.example.opsc7312poepart2_code.ui.register_client
 import android.os.Bundle
 import android.text.InputType
 import android.util.Base64
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.poe2.R
 import com.example.poe2.databinding.FragmentRegisterClientBinding
@@ -21,6 +19,7 @@ import java.security.MessageDigest
 import java.security.SecureRandom
 
 class RegisterClientFragment : Fragment() {
+
     private var _binding: FragmentRegisterClientBinding? = null
     private val binding get() = _binding!!
 
@@ -28,60 +27,35 @@ class RegisterClientFragment : Fragment() {
     private lateinit var database: FirebaseDatabase
     private lateinit var dbReference: DatabaseReference
 
+    private var passwordVisible = false // Track password visibility state
+
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRegisterClientBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        val editName = binding.etxtName
-        val editSurname = binding.etxtSurname
-        val editEmail = binding.etxtEmail
-        val editUsername = binding.etxtUsername
-        val editPassword = binding.etxtPassword
-        val editPhoneNumber = binding.etxtPhoneNumber
-        val btnRegister = binding.btnRegister
-        val btnCancel = binding.btnCancel
-        val iconViewPassword = binding.ibtnVisiblePassword
 
         // Initialize Firebase
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
-        dbReference = database.getReference("clients") // Change to "clients"
+        dbReference = database.getReference("clients")
 
-        btnCancel.setOnClickListener {
-            clearFields(
-                binding.etxtName,
-                binding.etxtSurname,
-                binding.etxtEmail,
-                binding.etxtUsername,
-                binding.etxtPassword,
-                binding.etxtPhoneNumber
-            )
+        // Set password visibility to hidden by default
+        binding.etxtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+
+        // Set up button click listeners
+        binding.btnCancel.setOnClickListener {
+            clearFields()
         }
 
-        btnRegister.setOnClickListener {
-            val name = editName.text.toString().trim()
-            val surname = editSurname.text.toString().trim()
-            val email = editEmail.text.toString().trim()
-            val username = editUsername.text.toString().trim()
-            val password = editPassword.text.toString().trim()
-            val phoneNumber = editPhoneNumber.text.toString().trim()
-
-            if (isValidInput(name, surname, email, username, password, phoneNumber)) {
-                registerUser(name, surname, email, username, password, phoneNumber)
-            } else {
-                Toast.makeText(requireContext(), "Please fill all fields correctly.", Toast.LENGTH_SHORT).show()
-            }
+        binding.btnRegister.setOnClickListener {
+            onRegisterClick()
         }
 
-        iconViewPassword.setOnClickListener {
-            togglePasswordVisibility(editPassword, iconViewPassword)
+        binding.iconViewPassword.setOnClickListener {
+            togglePasswordVisibility()
         }
 
-        return root
+        return binding.root
     }
 
     override fun onDestroyView() {
@@ -89,13 +63,23 @@ class RegisterClientFragment : Fragment() {
         _binding = null
     }
 
+    private fun onRegisterClick() {
+        val name = binding.etxtName.text.toString().trim()
+        val surname = binding.etxtSurname.text.toString().trim()
+        val email = binding.etxtEmail.text.toString().trim()
+        val username = binding.etxtUsername.text.toString().trim()
+        val password = binding.etxtPassword.text.toString().trim()
+        val phoneNumber = binding.etxtPhoneNumber.text.toString().trim()
+
+        if (isValidInput(name, surname, email, username, password, phoneNumber)) {
+            registerUser(name, surname, email, username, password, phoneNumber)
+        } else {
+            Toast.makeText(requireContext(), "Please fill all fields correctly.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun isValidInput(
-        name: String,
-        surname: String,
-        email: String,
-        username: String,
-        password: String,
-        phoneNumber: String
+        name: String, surname: String, email: String, username: String, password: String, phoneNumber: String
     ): Boolean {
         return name.isNotEmpty() &&
                 surname.isNotEmpty() &&
@@ -103,22 +87,13 @@ class RegisterClientFragment : Fragment() {
                 android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() &&
                 username.isNotEmpty() &&
                 password.length >= 6 &&
-                phoneNumber.isNotEmpty() // Ensure phone number is valid
+                phoneNumber.isNotEmpty()
     }
 
     private fun registerUser(
-        name: String,
-        surname: String,
-        email: String,
-        username: String,
-        password: String,
-        phoneNumber: String
+        name: String, surname: String, email: String, username: String, password: String, phoneNumber: String
     ) {
-        val userId = dbReference.push().key
-        if (userId == null) {
-            Toast.makeText(requireContext(), "Failed to generate user ID", Toast.LENGTH_SHORT).show()
-            return
-        }
+        val userId = dbReference.push().key ?: return showToast("Failed to generate user ID")
 
         // Hash and salt the password
         val salt = generateSalt()
@@ -130,38 +105,25 @@ class RegisterClientFragment : Fragment() {
             "surname" to surname,
             "email" to email,
             "username" to username,
-            "password" to hashedPassword, // Store the hashed password
-            "salt" to Base64.encodeToString(salt, Base64.DEFAULT), // Store the salt
-            "phoneNumber" to phoneNumber
+            "password" to hashedPassword,
+            "salt" to Base64.encodeToString(salt, Base64.DEFAULT),
+            "phoneNumber" to phoneNumber,
+            "isPasswordUpdated" to false
         )
 
-        try {
-            // Save user to Firebase Database under the "clients" node
-            dbReference.child(userId).setValue(user)
-                .addOnSuccessListener {
-                    Toast.makeText(requireContext(), "Data saved successfully!", Toast.LENGTH_SHORT).show()
-                    clearFields(
-                        binding.etxtName,
-                        binding.etxtSurname,
-                        binding.etxtEmail,
-                        binding.etxtUsername,
-                        binding.etxtPassword,
-                        binding.etxtPhoneNumber
-                    )
-                    findNavController().navigate(R.id.action_nav_register_client_to_nav_login_client)
-                }
-                .addOnFailureListener { exception ->
-                    Toast.makeText(requireContext(), "Error saving data: ${exception.message}", Toast.LENGTH_SHORT).show()
-                }
-        } catch (e: Exception) {
-            Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-        }
+        dbReference.child(userId).setValue(user)
+            .addOnSuccessListener {
+                showToast("Data saved successfully!")
+                clearFields()
+                findNavController().navigate(R.id.action_nav_register_client_to_nav_login_client)
+            }
+            .addOnFailureListener { exception ->
+                showToast("Error saving data: ${exception.message}")
+            }
     }
 
     private fun generateSalt(): ByteArray {
-        val salt = ByteArray(16)
-        SecureRandom().nextBytes(salt)
-        return salt
+        return ByteArray(16).apply { SecureRandom().nextBytes(this) }
     }
 
     private fun hashPassword(password: String, salt: ByteArray): String {
@@ -170,26 +132,30 @@ class RegisterClientFragment : Fragment() {
         return Base64.encodeToString(digest.digest(password.toByteArray()), Base64.DEFAULT)
     }
 
-    private fun clearFields(vararg editTexts: EditText) {
-        for (editText in editTexts) {
-            editText.text.clear()
+    private fun clearFields() {
+        with(binding) {
+            etxtName.text.clear()
+            etxtSurname.text.clear()
+            etxtEmail.text.clear()
+            etxtUsername.text.clear()
+            etxtPassword.text.clear()
+            etxtPhoneNumber.text.clear()
         }
     }
 
-    private fun togglePasswordVisibility(editPassword: EditText, iconViewPassword: ImageButton) {
-        val inputType = editPassword.inputType
-        if (inputType == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
-            // Hide password
-            editPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-            // Update icon to indicate hidden state
-            iconViewPassword.setImageResource(R.drawable.visible_icon)
+    private fun togglePasswordVisibility() {
+        passwordVisible = !passwordVisible
+        binding.etxtPassword.inputType = if (passwordVisible) {
+            InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
         } else {
-            // Show password
-            editPassword.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-            // Update icon to indicate visible state
-            iconViewPassword.setImageResource(R.drawable.visible_icon)
+            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         }
-        // Move the cursor to the end of the text
-        editPassword.setSelection(editPassword.text.length)
+
+        binding.iconViewPassword.setImageResource(if (passwordVisible) R.drawable.visible_icon else R.drawable.visible_icon)
+        binding.etxtPassword.setSelection(binding.etxtPassword.text.length) // Keep cursor at the end
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }

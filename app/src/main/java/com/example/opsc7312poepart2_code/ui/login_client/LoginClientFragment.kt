@@ -15,7 +15,6 @@ import androidx.navigation.fragment.findNavController
 import com.example.opsc7312poepart2_code.ui.login_dentist.LoginDentistFragment.Companion.loggedInDentistUsername
 import com.example.poe2.R
 import com.example.poe2.databinding.FragmentLoginClientBinding
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -30,7 +29,6 @@ class LoginClientFragment : Fragment() {
 
     private lateinit var database: FirebaseDatabase
     private lateinit var dbReference: DatabaseReference
-    private lateinit var auth: FirebaseAuth
     private lateinit var sharedPreferences: SharedPreferences
 
     private var passwordVisible = false // Password visibility state
@@ -46,8 +44,7 @@ class LoginClientFragment : Fragment() {
         _binding = FragmentLoginClientBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // Initialize Firebase Auth and Database
-        auth = FirebaseAuth.getInstance()
+        // Initialize Firebase Database
         database = FirebaseDatabase.getInstance()
         dbReference = database.getReference("clients") // Firebase node for clients
 
@@ -76,16 +73,16 @@ class LoginClientFragment : Fragment() {
 
         // Handle Forget Password text click
         binding.txtForgotPassword.setOnClickListener {
-            onForgotPasswordClicked(it)
+            onForgotPasswordClicked(it) // Use 'it' to pass the current view
         }
 
         return root
     }
 
     // Method for "Forgot Password" button click
-    fun onForgotPasswordClicked(view: View) {
+    public fun onForgotPasswordClicked(view: View) {
         // Navigate to ForgetPasswordFragment
-        findNavController().navigate(R.id.action_nav_login_dentist_to_nav_forget_password_dentist)
+        findNavController().navigate(R.id.action_nav_login_client_to_nav_forget_password_client) // Ensure the correct action ID
     }
 
     override fun onDestroyView() {
@@ -106,7 +103,7 @@ class LoginClientFragment : Fragment() {
 
                     // Compare the hashed password with the stored hashed password
                     if (hashedPassword == storedHashedPassword) {
-                        loggedInDentistUsername = username // Store the logged-in username
+                        loggedInClientUsername = username // Store the logged-in username
                         saveLoginStatus()
                         Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
                         findNavController().navigate(R.id.action_nav_login_client_to_nav_menu_client)

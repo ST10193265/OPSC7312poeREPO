@@ -3,6 +3,7 @@ package com.example.opsc7312poepart2_code.ui.login_dentist
 import android.os.Bundle
 import android.text.InputType
 import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +31,10 @@ class LoginDentistFragment : Fragment() {
     private lateinit var dbReference: DatabaseReference
     private lateinit var auth: FirebaseAuth
     private var passwordVisible = false // Password visibility state
+
+    companion object {
+        var loggedInDentistUsername: String? = null // Global variable to store the logged-in username
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -97,6 +102,8 @@ class LoginDentistFragment : Fragment() {
 
                     // Compare the hashed password with the stored hashed password
                     if (hashedPassword == storedHashedPassword) {
+                        loggedInDentistUsername = username // Store the logged-in username
+                        Log.i("Logged in user", "Login successful for user: $username")
                         Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
                         clearFields()
                         findNavController().navigate(R.id.action_nav_login_dentist_to_nav_menu_dentist)

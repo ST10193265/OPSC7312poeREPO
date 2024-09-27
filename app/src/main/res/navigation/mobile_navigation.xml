@@ -99,6 +99,9 @@
         android:name="com.example.poe2.ui.menu_client.MenuClientFragment"
         android:label="Menu - Client"
         tools:layout="@layout/fragment_menu_client" >
+        <action
+            android:id="@+id/action_nav_menu_client_to_nav_login_client"
+            app:destination="@id/nav_login_client" />
 
         <action
             android:id="@+id/action_nav_menu_client_to_nav_settings_client"

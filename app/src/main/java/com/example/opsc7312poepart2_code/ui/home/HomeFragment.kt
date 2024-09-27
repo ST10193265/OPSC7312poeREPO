@@ -1,6 +1,7 @@
 package com.example.poe2.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,6 +33,17 @@ class HomeFragment : Fragment() {
         binding.btnRegisterDentist.setOnClickListener {
             // Navigate to the Client Register fragment
             findNavController().navigate(R.id.action_nav_home_to_nav_register_dentist)
+        }
+
+        binding.btnLoginClient.setOnClickListener {
+            // Navigate to the Client Register fragment
+            Log.d("HomeFragment", "Login Client Button Clicked")
+            findNavController().navigate(R.id.action_nav_home_to_nav_login_client)
+        }
+
+        binding.btnLoginDentist.setOnClickListener{
+            Log.d("HomeFragment", "Login Dentist Button Clicked")
+            findNavController().navigate(R.id.action_nav_home_to_nav_login_dentist)
         }
 
         // Return the root view

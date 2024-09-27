@@ -72,34 +72,46 @@ android {
 
         // Utilities
         implementation(libs.android.maps.utils)
+// AndroidX Test dependencies
+androidTestImplementation ("androidx.test.ext:junit:1.1.5")
+androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
 
+// Fragment testing
+debugImplementation ("androidx.fragment:fragment-testing:1.6.1")
 
-        // AndroidX Test dependencies
-        androidTestImplementation ("androidx.test.ext:junit:1.1.5")
-        androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
+// JUnit (for unit testing)
+testImplementation ("junit:junit:4.13.2") // Or using libs.junit depending on your build system
 
-        // Fragment testing
-        debugImplementation ("androidx.fragment:fragment-testing:1.6.1")
+// Mocking framework
+testImplementation ("org.mockito:mockito-core:5.4.0")
 
-        // JUnit
-        testImplementation ("junit:junit:4.13.2")
+// Mockk (optional for Kotlin-based mocking)
+testImplementation ("io.mockk:mockk:1.12.3")
 
-        // Mocking framework (optional, useful for mocking dependencies)
-        testImplementation ("org.mockito:mockito-core:5.4.0")
+// Coroutines (if you are using coroutines in your app)
+testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
 
-        // Coroutines (if you are using coroutines in your app)
-        testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-        // Firebase testing
-        androidTestImplementation ("com.google.firebase:firebase-database:20.4.0")
-        androidTestImplementation ("com.google.firebase:firebase-database-ktx:20.4.0")
+// Firebase dependencies (Firebase Database)
+androidTestImplementation ("com.google.firebase:firebase-database:20.4.0")
+androidTestImplementation ("com.google.firebase:firebase-database-ktx:20.4.0")
 
+// Mockito for Android (if needed for instrumentation tests)
+androidTestImplementation ("org.mockito:mockito-android:5.4.0")
 
-        androidTestImplementation ("org.mockito:mockito-android:5.4.0")
-        // For ActivityTestRule
-        androidTestImplementation ("androidx.test:runner:1.5.1")
-        androidTestImplementation ("androidx.test:rules:1.5.0")
-        androidTestImplementation ("androidx.navigation:navigation-testing:2.5.3")
-        testImplementation ("io.mockk:mockk:1.12.3")
+// ActivityTestRule and other AndroidX test utilities
+androidTestImplementation ("androidx.test:runner:1.5.1")
+androidTestImplementation ("androidx.test:rules:1.5.0")
+androidTestImplementation ("androidx.navigation:navigation-testing:2.5.3")
+
+// Firebase Authentication
+implementation ("com.google.firebase:firebase-auth-ktx:21.0.3")
+
+// Google Play Services Authentication (for OAuth, Google sign-in, etc.)
+implementation ("com.google.android.gms:play-services-auth:20.4.1")
+
+// Using the new versioning system (optional)
+androidTestImplementation(libs.androidx.junit.v115) // If you're using Gradle version catalogs
+androidTestImplementation(libs.androidx.espresso.core.v351)
 
     }
 

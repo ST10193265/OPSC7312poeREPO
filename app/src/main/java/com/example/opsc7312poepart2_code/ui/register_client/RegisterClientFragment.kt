@@ -1,99 +1,61 @@
 package com.example.opsc7312poepart2_code.ui.register_client
 
-import androidx.fragment.app.viewModels
 import android.os.Bundle
 import android.text.InputType
-import androidx.fragment.app.Fragment
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
-import com.example.opsc7312poepart2_code.ui.login_client.LoginClientViewModel
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.poe2.R
 import com.example.poe2.databinding.FragmentRegisterClientBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import android.util.Log
-import android.widget.ImageButton
-import com.google.firebase.FirebaseApp
+import java.security.MessageDigest
+import java.security.SecureRandom
 
 class RegisterClientFragment : Fragment() {
+
     private var _binding: FragmentRegisterClientBinding? = null
     private val binding get() = _binding!!
-
-    private val loginViewModel: LoginClientViewModel by lazy {
-        ViewModelProvider(requireActivity()).get(LoginClientViewModel::class.java)
-    }
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var dbReference: DatabaseReference
 
+    private var passwordVisible = false // Track password visibility state
+
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentRegisterClientBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        val editName = binding.etxtName
-        val editSurname = binding.etxtSurname
-        val editEmail = binding.etxtEmail
-        val editUsername = binding.etxtUsername
-        val editPassword = binding.etxtPassword
-        val editPhoneNumber = binding.etxtPhoneNumber
-        val btnRegister = binding.btnRegister
-        val btnCancel = binding.btnCancel
-        val iconViewPassword = binding.ibtnVisiblePassword
 
         // Initialize Firebase
-        FirebaseApp.initializeApp(requireContext())
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
-        dbReference = database.getReference("clients") // Change to "clients"
+        dbReference = database.getReference("clients")
 
-        btnCancel.setOnClickListener{
-            clearFields(
-                binding.etxtName,
-                binding.etxtSurname,
-                binding.etxtEmail,
-                binding.etxtUsername,
-                binding.etxtPassword,
-                binding.etxtPhoneNumber
-            )
+        // Set password visibility to hidden by default
+        binding.etxtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+
+        // Set up button click listeners
+        binding.btnCancel.setOnClickListener {
+            clearFields()
         }
 
-        btnRegister.setOnClickListener {
-            //Log.d("RegisterClient", "Button clicked")
-
-            val name = editName.text.toString().trim()
-            val surname = editSurname.text.toString().trim()
-            val email = editEmail.text.toString().trim()
-            val username = editUsername.text.toString().trim()
-            val password = editPassword.text.toString().trim()
-            val phoneNumber = editPhoneNumber.text.toString().trim()
-
-           // Log.d("RegisterClient", "Captured Inputs - Name: $name, Email: $email")
-
-            if (isValidInput(name, surname, email, username, password, phoneNumber)) {
-               // Log.d("RegisterClient", "Valid Input")
-                registerUser(name, surname, email, username, password, phoneNumber)
-            } else {
-              //  Log.d("RegisterClient", "Invalid Input")
-                Toast.makeText(requireContext(), "Please fill all fields correctly.", Toast.LENGTH_SHORT).show()
-            }
+        binding.btnRegister.setOnClickListener {
+            onRegisterClick()
         }
 
-        iconViewPassword.setOnClickListener {
-            togglePasswordVisibility(editPassword, iconViewPassword)
+        binding.iconViewPassword.setOnClickListener {
+            togglePasswordVisibility()
         }
 
-        return root
+        return binding.root
     }
 
     override fun onDestroyView() {
@@ -101,13 +63,23 @@ class RegisterClientFragment : Fragment() {
         _binding = null
     }
 
+    private fun onRegisterClick() {
+        val name = binding.etxtName.text.toString().trim()
+        val surname = binding.etxtSurname.text.toString().trim()
+        val email = binding.etxtEmail.text.toString().trim()
+        val username = binding.etxtUsername.text.toString().trim()
+        val password = binding.etxtPassword.text.toString().trim()
+        val phoneNumber = binding.etxtPhoneNumber.text.toString().trim()
+
+        if (isValidInput(name, surname, email, username, password, phoneNumber)) {
+            registerUser(name, surname, email, username, password, phoneNumber)
+        } else {
+            Toast.makeText(requireContext(), "Please fill all fields correctly.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun isValidInput(
-        name: String,
-        surname: String,
-        email: String,
-        username: String,
-        password: String,
-        phoneNumber: String
+        name: String, surname: String, email: String, username: String, password: String, phoneNumber: String
     ): Boolean {
         return name.isNotEmpty() &&
                 surname.isNotEmpty() &&
@@ -115,25 +87,17 @@ class RegisterClientFragment : Fragment() {
                 android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() &&
                 username.isNotEmpty() &&
                 password.length >= 6 &&
-                phoneNumber.isNotEmpty() // Ensure phone number is valid
+                phoneNumber.isNotEmpty()
     }
 
     private fun registerUser(
-        name: String,
-        surname: String,
-        email: String,
-        username: String,
-        password: String,
-        phoneNumber: String
+        name: String, surname: String, email: String, username: String, password: String, phoneNumber: String
     ) {
-//        Log.d("RegisterClient", "Inside registerUser")
+        val userId = dbReference.push().key ?: return showToast("Failed to generate user ID")
 
-        val userId = dbReference.push().key
-        if (userId == null) {
-//            Log.e("RegisterClient", "Failed to generate user ID")
-            Toast.makeText(requireContext(), "Failed to generate user ID", Toast.LENGTH_SHORT).show()
-            return
-        }
+        // Hash and salt the password
+        val salt = generateSalt()
+        val hashedPassword = hashPassword(password, salt)
 
         val user = hashMapOf(
             "userId" to userId,
@@ -141,58 +105,57 @@ class RegisterClientFragment : Fragment() {
             "surname" to surname,
             "email" to email,
             "username" to username,
-            "password" to password, // In a real app, do not store plaintext passwords
-            "phoneNumber" to phoneNumber
+            "password" to hashedPassword,
+            "salt" to Base64.encodeToString(salt, Base64.DEFAULT),
+            "phoneNumber" to phoneNumber,
+            "isPasswordUpdated" to false
         )
 
-//        Log.d("RegisterClient", "Saving user with ID: $userId")
-//        Log.d("RegisterClient", "User data: $user")
+        dbReference.child(userId).setValue(user)
+            .addOnSuccessListener {
+                showToast("Data saved successfully!")
+                clearFields()
+                findNavController().navigate(R.id.action_nav_register_client_to_nav_login_client)
+            }
+            .addOnFailureListener { exception ->
+                showToast("Error saving data: ${exception.message}")
+            }
+    }
 
-        try {
-            // Save user to Firebase Database under the "clients" node
-            dbReference.child(userId).setValue(user)
-                .addOnSuccessListener {
-                    Toast.makeText(requireContext(), "Data saved successfully!", Toast.LENGTH_SHORT).show()
-                    clearFields(
-                        binding.etxtName,
-                        binding.etxtSurname,
-                        binding.etxtEmail,
-                        binding.etxtUsername,
-                        binding.etxtPassword,
-                        binding.etxtPhoneNumber
-                    )
+    private fun generateSalt(): ByteArray {
+        return ByteArray(16).apply { SecureRandom().nextBytes(this) }
+    }
 
-                }
-                .addOnFailureListener { exception ->
-                    Toast.makeText(requireContext(), "Error saving data: ${exception.message}", Toast.LENGTH_SHORT).show()
-                }
+    private fun hashPassword(password: String, salt: ByteArray): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        digest.update(salt)
+        return Base64.encodeToString(digest.digest(password.toByteArray()), Base64.DEFAULT)
+    }
 
-        } catch (e: Exception) {
-           // Log.e("RegisterClient", "Exception: ${e.message}")
-            Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+    private fun clearFields() {
+        with(binding) {
+            etxtName.text.clear()
+            etxtSurname.text.clear()
+            etxtEmail.text.clear()
+            etxtUsername.text.clear()
+            etxtPassword.text.clear()
+            etxtPhoneNumber.text.clear()
         }
     }
 
-    private fun clearFields(vararg editTexts: EditText) {
-        for (editText in editTexts) {
-            editText.text.clear()
-        }
-    }
-
-    private fun togglePasswordVisibility(editPassword: EditText, iconViewPassword: ImageButton) {
-        val inputType = editPassword.inputType
-        if (inputType == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
-            // Hide password
-            editPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-            // Update icon to indicate hidden state
-            iconViewPassword.setImageResource(R.drawable.visible_icon)
+    private fun togglePasswordVisibility() {
+        passwordVisible = !passwordVisible
+        binding.etxtPassword.inputType = if (passwordVisible) {
+            InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
         } else {
-            // Show password
-            editPassword.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-            // Update icon to indicate visible state
-            iconViewPassword.setImageResource(R.drawable.visible_icon)
+            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         }
-        // Move the cursor to the end of the text
-        editPassword.setSelection(editPassword.text.length)
+
+        binding.iconViewPassword.setImageResource(if (passwordVisible) R.drawable.visible_icon else R.drawable.visible_icon)
+        binding.etxtPassword.setSelection(binding.etxtPassword.text.length) // Keep cursor at the end
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }

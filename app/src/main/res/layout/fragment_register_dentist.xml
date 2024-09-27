@@ -10,18 +10,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageButton
-            android:id="@+id/ibtnVisiblePassword"
-            android:layout_width="44dp"
-            android:layout_height="43dp"
-            android:scaleType="centerInside"
+        <ImageView
+            android:id="@+id/icon_view_password"
+            android:layout_width="42dp"
+            android:layout_height="36dp"
+            android:clickable="true"
+            android:contentDescription="View Password"
+            android:focusable="true"
+            android:onClick="togglePasswordVisibility"
             android:src="@drawable/visible_icon"
-            app:layout_constraintBottom_toBottomOf="@id/etxtPassword"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@id/etxtPassword"
-            app:layout_constraintTop_toTopOf="@id/etxtPassword"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.802" />
 
         <Button
             android:id="@+id/btnRegister"

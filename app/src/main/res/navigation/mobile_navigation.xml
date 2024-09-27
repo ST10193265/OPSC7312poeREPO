@@ -13,23 +13,86 @@
         <action
             android:id="@+id/action_nav_home_to_nav_register_client"
             app:destination="@id/nav_register_client" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_login_client"
+            app:destination="@id/nav_login_client" />
 
         <action
             android:id="@+id/action_nav_home_to_nav_register_dentist"
             app:destination="@id/nav_register_dentist" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_login_dentist"
+            app:destination="@id/nav_login_dentist" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_forget_password_client"
+        android:name="com.example.opsc7312poepart2_code.ui.forget_password_client.ForgetPasswordClientFragment"
+        android:label="Forget Password - Client"
+        tools:layout="@layout/fragment_forget_password_client">
+        <action
+            android:id="@+id/action_nav_forget_password_client_to_nav_login_client"
+            app:destination="@id/nav_login_client" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_forget_password_dentist"
+        android:name="com.example.opsc7312poepart2_code.ui.forget_password_dentist.ForgetPasswordDentistFragment"
+        android:label="Forget Password - Dentist"
+        tools:layout="@layout/fragment_forget_password_dentist">
+        <action
+            android:id="@+id/action_nav_forget_password_dentist_to_nav_login_dentist"
+            app:destination="@id/nav_login_dentist" />
     </fragment>
 
     <fragment
         android:id="@+id/nav_register_client"
         android:name="com.example.opsc7312poepart2_code.ui.register_client.RegisterClientFragment"
         android:label="Register - Client"
-        tools:layout="@layout/fragment_register_client" />
+        tools:layout="@layout/fragment_register_client" >
+        <action
+            android:id="@+id/action_nav_register_client_to_nav_login_client"
+            app:destination="@id/nav_login_client" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_register_dentist"
         android:name="com.example.opsc7312poepart2_code.ui.register_dentist.RegisterDentistFragment"
         android:label="Register - Dentist"
-        tools:layout="@layout/fragment_register_dentist" />
+        tools:layout="@layout/fragment_register_dentist" >
+        <action
+            android:id="@+id/action_nav_register_dentist_to_nav_login_dentist"
+            app:destination="@id/nav_login_dentist" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_login_dentist"
+        android:name="com.example.opsc7312poepart2_code.ui.login_dentist.LoginDentistFragment"
+        android:label="Login - Dentist"
+        tools:layout="@layout/fragment_login_dentist" >
+        <action
+            android:id="@+id/action_nav_login_dentist_to_nav_menu_dentist"
+            app:destination="@id/nav_menu_dentist" />
+        <action
+            android:id="@+id/action_nav_login_dentist_to_nav_forget_password_dentist"
+            app:destination="@id/nav_forget_password_dentist" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_login_client"
+        android:name="com.example.opsc7312poepart2_code.ui.login_client.LoginClientFragment"
+        android:label="Login - Client"
+        tools:layout="@layout/fragment_login_client" >
+        <action
+            android:id="@+id/action_nav_login_client_to_nav_menu_client"
+            app:destination="@id/nav_menu_client" />
+        <action
+            android:id="@+id/action_nav_login_client_to_nav_forget_password_client"
+            app:destination="@id/nav_forget_password_client" />
+    </fragment>
+
+
+
 
     <fragment
         android:id="@+id/nav_menu_client"

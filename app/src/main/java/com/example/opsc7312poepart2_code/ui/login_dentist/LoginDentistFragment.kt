@@ -71,7 +71,7 @@ class LoginDentistFragment : Fragment() {
 
         // Handle password visibility toggle
         binding.iconViewPassword.setOnClickListener {
-            togglePasswordVisibility(binding.etxtPassword, binding.iconViewPassword)
+            togglePasswordVisibility()
         }
 
         // Handle Forget Password text click
@@ -151,21 +151,21 @@ class LoginDentistFragment : Fragment() {
         return Base64.encodeToString(digest.digest(password.toByteArray()), Base64.DEFAULT)
     }
 
-    private fun togglePasswordVisibility(editPassword: EditText, ibtnVisiblePassword: ImageView) {
+    private fun togglePasswordVisibility() {
         passwordVisible = !passwordVisible
 
         if (passwordVisible) {
             // Show password
-            editPassword.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-            ibtnVisiblePassword.setImageResource(R.drawable.visible_icon) // Change to your visible icon
+            binding.etxtPassword.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            binding.iconViewPassword.setImageResource(R.drawable.visible_icon) // Change to your visible icon
         } else {
             // Hide password
-            editPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-            ibtnVisiblePassword.setImageResource(R.drawable.visible_icon) // Change to your hidden icon
+            binding.etxtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            binding.iconViewPassword.setImageResource(R.drawable.visible_icon) // Change to your hidden icon
         }
 
         // Move the cursor to the end of the text
-        editPassword.setSelection(editPassword.text.length)
+        binding.etxtPassword.setSelection(binding.etxtPassword.text.length)
     }
 
     private fun saveLoginStatus() {

@@ -116,20 +116,16 @@
             app:layout_constraintVertical_bias="0.546" />
 
         <ImageView
-            android:id="@+id/icon_view_password"
-            android:layout_width="55dp"
-            android:layout_height="38dp"
-            android:clickable="true"
-            android:contentDescription="View Password"
-            android:focusable="true"
-            android:onClick="togglePasswordVisibility"
+            android:id="@+id/iconViewPassword"
+            android:layout_width="50dp"
+            android:layout_height="44dp"
             android:src="@drawable/visible_icon"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.78"
+            app:layout_constraintHorizontal_bias="0.783"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.551" />
+            app:layout_constraintVertical_bias="0.545" />
 
         <com.google.android.gms.common.SignInButton
             android:id="@+id/btnGoogleSignIn"

@@ -15,6 +15,7 @@ import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.example.opsc7312poepart2_code.ui.login_client.LoginClientFragment.Companion.loggedInClientUsername
 
 import com.example.poe2.R
 import com.google.firebase.database.DatabaseReference
@@ -187,11 +188,13 @@ class ClientSettingsFragment : Fragment() {
         }
 
         // Dentist ID (this should be dynamic or fetched accordingly)
-        val clientId = "-O79y5XftzGBuX4w0_UU"
+        val clientId = loggedInClientUsername
 
         // Update data in Firebase if there's any change
         if (updatedData.isNotEmpty()) {
-            updateSettings(clientId, updatedData)
+            if (clientId != null) {
+                updateSettings(clientId, updatedData)
+            }
         } else {
             Toast.makeText(requireContext(), "No changes made!", Toast.LENGTH_SHORT).show()
             navigateToHome()
@@ -227,7 +230,7 @@ class ClientSettingsFragment : Fragment() {
 
 
     fun loadSettings() {
-        val clientId = "-O79y5XftzGBuX4w0_UU" // Dynamic ID needed
+        val clientId = loggedInClientUsername // Dynamic ID needed
         database.child("clients/$clientId").get()
             .addOnSuccessListener { dataSnapshot ->
                 if (dataSnapshot.exists()) {

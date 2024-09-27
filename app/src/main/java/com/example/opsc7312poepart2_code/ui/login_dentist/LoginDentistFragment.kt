@@ -76,12 +76,17 @@ class LoginDentistFragment : Fragment() {
 
         // Handle Forget Password text click
         binding.txtForgotPassword.setOnClickListener {
-            findNavController().navigate(R.id.action_nav_login_dentist_to_nav_forget_password_dentist)
+            onForgotPasswordClicked(it) // Use 'it' to pass the current view
         }
 
         return root
     }
 
+
+    fun onForgotPasswordClicked(view: View) {
+        // Navigate to ForgetPasswordFragment
+        findNavController().navigate(R.id.action_nav_login_dentist_to_nav_forget_password_dentist) // Ensure the correct action ID
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

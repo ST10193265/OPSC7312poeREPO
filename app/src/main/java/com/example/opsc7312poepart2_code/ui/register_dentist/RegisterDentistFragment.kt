@@ -1,3 +1,5 @@
+package com.example.opsc7312poepart2_code.ui.register_dentist
+
 import android.os.Bundle
 import android.text.InputType
 import android.util.Base64

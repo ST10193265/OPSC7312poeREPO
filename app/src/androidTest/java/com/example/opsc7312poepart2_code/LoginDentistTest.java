@@ -21,15 +21,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.example.opsc7312poepart2_code.ui.login_client.LoginClientFragment;
+import com.example.opsc7312poepart2_code.ui.login_dentist.LoginDentistFragment;
 import com.example.poe2.MainActivity;
 import com.example.poe2.R;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DatabaseReference;
 
 @RunWith(AndroidJUnit4.class)
-public class LoginClientTest {
+public class LoginDentistTest {
 
-    private FragmentScenario<LoginClientFragment> fragmentScenario;
+    private FragmentScenario<LoginDentistFragment> fragmentScenario;
     private TestNavHostController navController;
     private DatabaseReference dbReference;
 
@@ -42,17 +43,17 @@ public class LoginClientTest {
         activityScenario.onActivity(activity -> {
             navController = new TestNavHostController(activity);
             navController.setGraph(R.navigation.mobile_navigation);
-            navController.setCurrentDestination(R.id.nav_login_client); // Set the start destination
+            navController.setCurrentDestination(R.id.nav_login_dentist); // Set the start destination
         });
 
         // Launch the LoginClientFragment
-        fragmentScenario = FragmentScenario.launchInContainer(LoginClientFragment.class);
+        fragmentScenario = FragmentScenario.launchInContainer(LoginDentistFragment.class);
 
         // Set the NavController for the fragment
         fragmentScenario.onFragment(fragment -> {
             Navigation.setViewNavController(fragment.requireView(), navController);
             // Mock Firebase database and create test user
-            dbReference = FirebaseDatabase.getInstance().getReference("clients");
+            dbReference = FirebaseDatabase.getInstance().getReference("dentists");
             // Add the test user data
             dbReference.child("testUser").child("password").setValue("testPassword");
         });
@@ -61,7 +62,7 @@ public class LoginClientTest {
     @Test
     public void testSuccessfulLogin() {
         // Simulate entering username and password
-        onView(withId(R.id.etxtUsername)).perform(typeText("johndoe"), closeSoftKeyboard());
+        onView(withId(R.id.etxtUsername)).perform(typeText("testDentist"), closeSoftKeyboard());
         onView(withId(R.id.etxtPassword)).perform(replaceText("testPassword"), closeSoftKeyboard());
 
         // Click the login button
@@ -78,7 +79,7 @@ public class LoginClientTest {
         fragmentScenario.onFragment(fragment -> {
             int expectedDestinationId = R.id.nav_menu_client;
             assertEquals(expectedDestinationId, navController.getCurrentDestination().getId());
-            Log.i("LoginClientTest", "Login successful for user: testUser");
+            Log.i("LoginDentistTest", "Login successful for user: testDentist");
         });
     }
 
@@ -91,7 +92,7 @@ public class LoginClientTest {
         fragmentScenario.onFragment(fragment -> {
             int expectedDestinationId = R.id.nav_login_client;
             assertEquals(expectedDestinationId, navController.getCurrentDestination().getId());
-            Log.w("LoginClientTest", "Attempted login with empty fields.");
+            Log.w("LoginDentistTest", "Attempted login with empty fields.");
         });
     }
 }

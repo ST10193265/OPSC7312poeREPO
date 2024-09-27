@@ -71,7 +71,7 @@ class LoginDentistFragment : Fragment() {
 
         // Set click listener for the password visibility icon
         binding.iconViewPassword.setOnClickListener {
-            togglePasswordVisibility() // Call the method without parameters
+            togglePasswordVisibility(it) // Call the method without parameters
         }
 
         // Handle Forget Password text click
@@ -151,7 +151,7 @@ class LoginDentistFragment : Fragment() {
         return Base64.encodeToString(digest.digest(password.toByteArray()), Base64.DEFAULT)
     }
 
-    fun togglePasswordVisibility() {
+    fun togglePasswordVisibility(view: View) {
         passwordVisible = !passwordVisible
 
         if (passwordVisible) {

@@ -76,10 +76,16 @@ class LoginClientFragment : Fragment() {
 
         // Handle Forget Password text click
         binding.txtForgotPassword.setOnClickListener {
-            findNavController().navigate(R.id.action_nav_login_client_to_nav_forget_password_client)
+            onForgotPasswordClicked(it)
         }
 
         return root
+    }
+
+    // Method for "Forgot Password" button click
+    fun onForgotPasswordClicked(view: View) {
+        // Navigate to ForgetPasswordFragment
+        findNavController().navigate(R.id.action_nav_login_dentist_to_nav_forget_password_dentist)
     }
 
     override fun onDestroyView() {

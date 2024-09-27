@@ -107,7 +107,7 @@ class RegisterDentistFragment : Fragment() {
             return false
         }
 
-        if (phoneNumber.isEmpty() || !phoneNumber.matches(Regex("^[+]?[0-9]{10,13}\$"))) {
+        if (phoneNumber.isEmpty()) {
             showToast("Please enter a valid phone number.")
             return false
         }

@@ -1,5 +1,6 @@
 package com.example.opsc7312poepart2_code.ui.login_dentist
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.InputType
@@ -13,10 +14,8 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.opsc7312poepart2_code.ui.login_client.LoginClientFragment.Companion.loggedInClientUsername
 import com.example.poe2.R
 import com.example.poe2.databinding.FragmentLoginDentistBinding
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -31,7 +30,6 @@ class LoginDentistFragment : Fragment() {
 
     private lateinit var database: FirebaseDatabase
     private lateinit var dbReference: DatabaseReference
-    private lateinit var auth: FirebaseAuth
     private var passwordVisible = false // Password visibility state
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -49,8 +47,10 @@ class LoginDentistFragment : Fragment() {
         _binding = FragmentLoginDentistBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // Initialize Firebase Auth and Database
-        auth = FirebaseAuth.getInstance()
+        // Initialize SharedPreferences
+        sharedPreferences = requireActivity().getSharedPreferences("your_preferences", Context.MODE_PRIVATE)
+
+        // Initialize Firebase Database
         database = FirebaseDatabase.getInstance()
         dbReference = database.getReference("dentists") // Firebase node for dentists
 
@@ -76,11 +76,15 @@ class LoginDentistFragment : Fragment() {
 
         // Handle Forget Password text click
         binding.txtForgotPassword.setOnClickListener {
-            // Navigate to ForgetPasswordFragment
-            findNavController().navigate(R.id.action_nav_login_dentist_to_nav_forget_password_dentist)
+            onForgotPasswordClicked()
         }
 
         return root
+    }
+
+    fun onForgotPasswordClicked() {
+        // Navigate to ForgetPasswordFragment
+        findNavController().navigate(R.id.action_nav_login_dentist_to_nav_forget_password_dentist)
     }
 
     override fun onDestroyView() {
@@ -100,21 +104,34 @@ class LoginDentistFragment : Fragment() {
                 if (snapshot.exists()) {
                     val userSnapshot = snapshot.children.first()
                     val storedHashedPassword = userSnapshot.child("password").getValue(String::class.java) ?: ""
-                    val storedSalt = userSnapshot.child("salt").getValue(String::class.java)?.let { Base64.decode(it, Base64.DEFAULT) } ?: ByteArray(0)
+                    val storedSalt = userSnapshot.child("salt").getValue(String::class.java)
 
-                    // Hash the input password with the stored salt
-                    val hashedPassword = hashPassword(password, storedSalt)
+                    if (storedSalt == null) {
+                        Log.e("LoginDentistFragment", "Salt is missing for user: $username")
+                        Toast.makeText(requireContext(), "Error: Salt is missing.", Toast.LENGTH_SHORT).show()
+                        return
+                    }
 
-                    // Compare the hashed password with the stored hashed password
-                    if (hashedPassword == storedHashedPassword) {
-                        loggedInDentistUsername = username // Store the logged-in username
-                        saveLoginStatus()
-                        Log.i("Logged in user", "Login successful for user: $username with ID: $loggedInDentistUserId")
-                        Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
-                        clearFields()
-                        findNavController().navigate(R.id.action_nav_login_dentist_to_nav_menu_dentist)
-                    } else {
-                        Toast.makeText(requireContext(), "Incorrect password.", Toast.LENGTH_SHORT).show()
+                    try {
+                        val decodedSalt = Base64.decode(storedSalt, Base64.DEFAULT)
+
+                        // Hash the input password with the stored salt
+                        val hashedPassword = hashPassword(password, decodedSalt)
+
+                        // Compare the hashed password with the stored hashed password
+                        if (hashedPassword == storedHashedPassword) {
+                            loggedInDentistUsername = username // Store the logged-in username
+                            saveLoginStatus()
+                            Log.i("Logged in user", "Login successful for user: $username")
+                            Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
+                            clearFields()
+                            findNavController().navigate(R.id.action_nav_login_dentist_to_nav_menu_dentist)
+                        } else {
+                            Toast.makeText(requireContext(), "Incorrect password.", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: IllegalArgumentException) {
+                        Log.e("LoginDentistFragment", "Error decoding salt: ${e.message}")
+                        Toast.makeText(requireContext(), "Error decoding salt.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     Toast.makeText(requireContext(), "User not found.", Toast.LENGTH_SHORT).show()
@@ -153,7 +170,8 @@ class LoginDentistFragment : Fragment() {
     private fun saveLoginStatus() {
         val editor = sharedPreferences.edit()
         editor.putBoolean("isLoggedIn", true)
-        editor.putString("username", loggedInClientUsername)
+        editor.putString("username", loggedInDentistUsername)
+        editor.putString("id", loggedInDentistUserId)
         editor.apply()
     }
 }

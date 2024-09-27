@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.opsc7312poepart2_code.ui.login_dentist.LoginDentistFragment.Companion.loggedInDentistUsername
 import com.example.poe2.R
 import com.example.poe2.databinding.FragmentLoginClientBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -36,6 +37,7 @@ class LoginClientFragment : Fragment() {
 
     companion object {
         var loggedInClientUsername: String? = null // Global variable to store the logged-in username
+        var loggedInClientUserId: String? = null // Global variable to store the logged-in user ID
     }
 
     override fun onCreateView(
@@ -98,7 +100,7 @@ class LoginClientFragment : Fragment() {
 
                     // Compare the hashed password with the stored hashed password
                     if (hashedPassword == storedHashedPassword) {
-                        loggedInClientUsername = username // Store the logged-in username
+                        loggedInDentistUsername = username // Store the logged-in username
                         saveLoginStatus()
                         Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
                         findNavController().navigate(R.id.action_nav_login_client_to_nav_menu_client)
@@ -141,6 +143,7 @@ class LoginClientFragment : Fragment() {
         val editor = sharedPreferences.edit()
         editor.putBoolean("isLoggedIn", true)
         editor.putString("username", loggedInClientUsername)
+        editor.putString("id", loggedInClientUserId)
         editor.apply()
     }
 }

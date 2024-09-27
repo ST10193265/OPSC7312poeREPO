@@ -90,6 +90,7 @@ class RegisterClientFragment : Fragment() {
                 phoneNumber.isNotEmpty()
     }
 
+
     private fun registerUser(
         name: String, surname: String, email: String, username: String, password: String, phoneNumber: String
     ) {

@@ -36,6 +36,16 @@
     </fragment>
 
     <fragment
+        android:id="@+id/nav_forget_password_dentist"
+        android:name="com.example.opsc7312poepart2_code.ui.forget_password_dentist.ForgetPasswordDentistFragment"
+        android:label="Forget Password - Dentist"
+        tools:layout="@layout/fragment_forget_password_dentist">
+        <action
+            android:id="@+id/action_nav_forget_password_dentist_to_nav_login_dentist"
+            app:destination="@id/nav_login_dentist" />
+    </fragment>
+
+    <fragment
         android:id="@+id/nav_register_client"
         android:name="com.example.opsc7312poepart2_code.ui.register_client.RegisterClientFragment"
         android:label="Register - Client"
@@ -63,6 +73,9 @@
         <action
             android:id="@+id/action_nav_login_dentist_to_nav_menu_dentist"
             app:destination="@id/nav_menu_dentist" />
+        <action
+            android:id="@+id/action_nav_login_dentist_to_nav_forget_password_dentist"
+            app:destination="@id/nav_forget_password_dentist" />
     </fragment>
 
     <fragment

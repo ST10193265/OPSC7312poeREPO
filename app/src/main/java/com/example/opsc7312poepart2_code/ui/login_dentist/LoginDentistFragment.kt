@@ -11,9 +11,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-
 import com.example.poe2.R
-import com.example.poe2.databinding.FragmentLoginClientBinding
 import com.example.poe2.databinding.FragmentLoginDentistBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -24,12 +22,14 @@ import com.google.firebase.database.ValueEventListener
 import java.security.MessageDigest
 
 class LoginDentistFragment : Fragment() {
+
     private var _binding: FragmentLoginDentistBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var database: FirebaseDatabase
     private lateinit var dbReference: DatabaseReference
     private lateinit var auth: FirebaseAuth
+    private var passwordVisible = false // Password visibility state
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,12 +39,12 @@ class LoginDentistFragment : Fragment() {
         _binding = FragmentLoginDentistBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // Initialize Firebase Auth
+        // Initialize Firebase Auth and Database
         auth = FirebaseAuth.getInstance()
-
         database = FirebaseDatabase.getInstance()
-        dbReference = database.getReference("dentists") // Change to "clients"
+        dbReference = database.getReference("dentists") // Firebase node for dentists
 
+        // Handle login button click
         binding.btnLogin.setOnClickListener {
             val username = binding.etxtUsername.text.toString().trim()
             val password = binding.etxtPassword.text.toString().trim()
@@ -56,8 +56,18 @@ class LoginDentistFragment : Fragment() {
             }
         }
 
+        // Set the password field to not visible by default
+        binding.etxtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+
+        // Handle password visibility toggle
         binding.iconViewPassword.setOnClickListener {
             togglePasswordVisibility(binding.etxtPassword, binding.iconViewPassword)
+        }
+
+        // Handle Forget Password text click
+        binding.txtForgotPassword.setOnClickListener {
+            // Navigate to ForgetPasswordFragment
+            findNavController().navigate(R.id.action_nav_login_dentist_to_nav_forget_password_dentist)
         }
 
         return root
@@ -111,18 +121,18 @@ class LoginDentistFragment : Fragment() {
     }
 
     private fun togglePasswordVisibility(editPassword: EditText, ibtnVisiblePassword: ImageView) {
-        val inputType = editPassword.inputType
-        if (inputType == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
-            // Hide password
-            editPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-            // Update icon to indicate hidden state
-            ibtnVisiblePassword.setImageResource(R.drawable.visible_icon) // Set to your hidden icon
-        } else {
+        passwordVisible = !passwordVisible
+
+        if (passwordVisible) {
             // Show password
             editPassword.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-            // Update icon to indicate visible state
-            ibtnVisiblePassword.setImageResource(R.drawable.visible_icon) // Set to your visible icon
+            ibtnVisiblePassword.setImageResource(R.drawable.visible_icon) // Change to your visible icon
+        } else {
+            // Hide password
+            editPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            ibtnVisiblePassword.setImageResource(R.drawable.visible_icon) // Change to your hidden icon
         }
+
         // Move the cursor to the end of the text
         editPassword.setSelection(editPassword.text.length)
     }

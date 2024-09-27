@@ -69,9 +69,9 @@ class LoginDentistFragment : Fragment() {
         // Set the password field to not visible by default
         binding.etxtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
 
-        // Handle password visibility toggle
+        // Set click listener for the password visibility icon
         binding.iconViewPassword.setOnClickListener {
-            togglePasswordVisibility()
+            togglePasswordVisibility() // Call the method without parameters
         }
 
         // Handle Forget Password text click
@@ -151,17 +151,17 @@ class LoginDentistFragment : Fragment() {
         return Base64.encodeToString(digest.digest(password.toByteArray()), Base64.DEFAULT)
     }
 
-    private fun togglePasswordVisibility() {
+    fun togglePasswordVisibility() {
         passwordVisible = !passwordVisible
 
         if (passwordVisible) {
             // Show password
             binding.etxtPassword.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-            binding.iconViewPassword.setImageResource(R.drawable.visible_icon) // Change to your visible icon
+            binding.iconViewPassword.setImageResource(R.drawable.visible_icon) // Update with your visible icon resource
         } else {
             // Hide password
             binding.etxtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-            binding.iconViewPassword.setImageResource(R.drawable.visible_icon) // Change to your hidden icon
+            binding.iconViewPassword.setImageResource(R.drawable.visible_icon) // Update with your hidden icon resource
         }
 
         // Move the cursor to the end of the text

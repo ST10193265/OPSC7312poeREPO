@@ -220,7 +220,7 @@ class SettingsDentistFragment : Fragment() {
         }
 
         // Dentist ID (using the dynamically fetched ID from the logged-in user)
-        val dentistId = LoginDentistFragment.loggedInDentistUsername
+        val dentistId = LoginDentistFragment.loggedInDentistUserId
 
         // Update data in Firebase if there's any change
         if (dentistId != null && updatedData.isNotEmpty()) {

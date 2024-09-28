@@ -120,7 +120,6 @@
             android:id="@+id/iconViewPassword"
             android:layout_width="44dp"
             android:layout_height="41dp"
-            android:onClick="togglePasswordVisibility"
             android:src="@drawable/visible_icon"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

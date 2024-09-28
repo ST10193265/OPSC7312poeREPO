@@ -202,6 +202,7 @@ class LoginDentistFragment : Fragment() {
         binding.etxtPassword.setSelection(binding.etxtPassword.text.length)
     }
 
+
     private fun saveLoginStatus() {
         val editor = sharedPreferences.edit()
         editor.putBoolean("isLoggedIn", true)

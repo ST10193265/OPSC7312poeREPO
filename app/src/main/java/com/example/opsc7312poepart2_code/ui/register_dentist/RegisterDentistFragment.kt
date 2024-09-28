@@ -51,7 +51,7 @@ class RegisterDentistFragment : Fragment() {
         }
 
         binding.iconViewPassword.setOnClickListener {
-            togglePasswordVisibility()
+            togglePasswordVisibility(it)
         }
 
         return binding.root
@@ -168,16 +168,20 @@ class RegisterDentistFragment : Fragment() {
         }
     }
 
-    private fun togglePasswordVisibility() {
+    // Ensure this method is public
+    fun togglePasswordVisibility(view: View) {
         passwordVisible = !passwordVisible
-        binding.etxtPassword.inputType = if (passwordVisible) {
-            InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-        } else {
-            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-        }
 
-        binding.iconViewPassword.setImageResource(if (passwordVisible) R.drawable.visible_icon else R.drawable.visible_icon)
-        binding.etxtPassword.setSelection(binding.etxtPassword.text.length) // Keep cursor at the end
+        if (passwordVisible) {
+            binding.etxtPassword.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            binding.iconViewPassword.setImageResource(R.drawable.visible_icon)
+        }
+//        else {
+//            binding.etxtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+//            binding.iconViewPassword.setImageResource(R.drawable.hidden_icon)
+//        }
+
+        binding.etxtPassword.setSelection(binding.etxtPassword.text.length)
     }
 
     private fun showToast(message: String) {

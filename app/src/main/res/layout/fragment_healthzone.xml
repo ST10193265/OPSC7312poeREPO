@@ -59,7 +59,7 @@
             <WebView
                 android:id="@+id/wvFloss"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="match_parent"
             app:layout_constraintTop_toBottomOf="@id/iLogo"
             android:layout_marginBottom="8dp"
                 tools:ignore="WebViewLayout" />
@@ -78,7 +78,7 @@
             <WebView
                 android:id="@+id/wvDentalTrouble"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="match_parent"
             app:layout_constraintTop_toBottomOf="@id/txtFloss"
             android:layout_marginBottom="8dp" />
 
@@ -96,7 +96,7 @@
             <WebView
                 android:id="@+id/wvXrays"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="match_parent"
             app:layout_constraintTop_toBottomOf="@id/txtDentalTrouble"
             android:layout_marginBottom="8dp" />
 
@@ -114,9 +114,10 @@
             <WebView
                 android:id="@+id/wvFillings"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="match_parent"
             app:layout_constraintTop_toBottomOf="@id/txtXrays"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+                tools:ignore="WebViewLayout" />
 
             <TextView
                 android:id="@+id/txtFilling"

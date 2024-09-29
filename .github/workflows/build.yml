@@ -48,8 +48,25 @@ jobs:
     - name: Run Unit Tests
       run: ./gradlew test --stacktrace
 
+    - name: Start Android Emulator
+      run: |
+        sdkmanager "system-images;android-30;google_apis;x86_64"
+        echo "y" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --force
+        $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window -no-boot-anim &
+        adb wait-for-device
+        adb shell input keyevent 82
+
+    - name: Wait for Emulator to Boot
+      run: |
+        adb wait-for-device
+        adb shell getprop init.svc.bootanim | grep -m 1 stopped
+
     - name: Run UI (Instrumentation) Tests
       run: ./gradlew connectedAndroidTest --stacktrace
       env:
         MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
+
+    - name: Stop Emulator
+      if: always()
+      run: adb -s emulator-5554 emu kill
 

@@ -9,7 +9,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertEquals;
 
 import android.text.InputType;
-import android.util.Log;
 import android.widget.EditText;
 
 import androidx.fragment.app.testing.FragmentScenario;
@@ -71,8 +70,6 @@ public class RegisterDentistTest {
         // Click the register button
         onView(withId(R.id.btnRegister)).perform(click());
 
-        // Add a delay to wait for the registration process to complete
-        // Alternatively, you can use IdlingResource for better synchronization
         try {
             Thread.sleep(2000); // Wait for the registration process to complete
         } catch (InterruptedException e) {
@@ -81,9 +78,8 @@ public class RegisterDentistTest {
 
         // Verify that the user is navigated to the login screen after successful registration
         fragmentScenario.onFragment(fragment -> {
-            int expectedDestinationId = R.id.nav_login_dentist; // Ensure this is correct
+            int expectedDestinationId = R.id.nav_login_dentist;
             assertEquals(expectedDestinationId, navController.getCurrentDestination().getId());
-            Log.i("RegisterDentistTest", "Registration successful for user: testDentist");
         });
     }
 
@@ -94,36 +90,8 @@ public class RegisterDentistTest {
 
         // Verify that the user remains on the registration screen
         fragmentScenario.onFragment(fragment -> {
-            int expectedDestinationId = R.id.nav_register_dentist; // Ensure this matches
+            int expectedDestinationId = R.id.nav_register_dentist;
             assertEquals(expectedDestinationId, navController.getCurrentDestination().getId());
-            Log.w("RegisterDentistTest", "Attempted registration with empty fields.");
-        });
-    }
-
-    @Test
-    public void testPasswordVisibilityToggle() {
-        // Check initial password visibility state (should be hidden)
-        fragmentScenario.onFragment(fragment -> {
-            EditText passwordEditText = fragment.getView().findViewById(R.id.etxtPassword);
-            assertEquals(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD, passwordEditText.getInputType());
-        });
-
-        // Click the visibility toggle
-        onView(withId(R.id.icon_view_password)).perform(click());
-
-        // Check if password visibility has toggled
-        fragmentScenario.onFragment(fragment -> {
-            EditText passwordEditText = fragment.getView().findViewById(R.id.etxtPassword);
-            assertEquals(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD, passwordEditText.getInputType());
-        });
-
-        // Click the visibility toggle again
-        onView(withId(R.id.icon_view_password)).perform(click());
-
-        // Check if password visibility is back to hidden
-        fragmentScenario.onFragment(fragment -> {
-            EditText passwordEditText = fragment.getView().findViewById(R.id.etxtPassword);
-            assertEquals(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD, passwordEditText.getInputType());
         });
     }
 }

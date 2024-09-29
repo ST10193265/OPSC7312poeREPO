@@ -71,11 +71,9 @@ class RegisterDentistFragment : Fragment() {
         val phoneNumber = binding.etxtPhoneNumber.text.toString().trim()
 
         if (!isValidInput(name, address, email, username, password, phoneNumber)) {
-            // Validation failed, no need to proceed with registration
             return
         }
 
-        // Continue with registration if validation passes
         registerUser(name, address, email, username, password, phoneNumber)
     }
 
@@ -120,7 +118,6 @@ class RegisterDentistFragment : Fragment() {
     ) {
         val userId = dbReference.push().key ?: return showToast("Failed to generate user ID")
 
-        // Hash and salt the password
         val salt = generateSalt()
         val hashedPassword = hashPassword(password, salt)
 
@@ -168,19 +165,18 @@ class RegisterDentistFragment : Fragment() {
         }
     }
 
-    // Ensure this method is public
     fun togglePasswordVisibility(view: View) {
         passwordVisible = !passwordVisible
 
         if (passwordVisible) {
             binding.etxtPassword.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
             binding.iconViewPassword.setImageResource(R.drawable.visible_icon)
+        } else {
+            binding.etxtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            binding.iconViewPassword.setImageResource(R.drawable.visible_icon)
         }
-//        else {
-//            binding.etxtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-//            binding.iconViewPassword.setImageResource(R.drawable.hidden_icon)
-//        }
 
+        // Ensure the cursor stays at the end after toggling
         binding.etxtPassword.setSelection(binding.etxtPassword.text.length)
     }
 

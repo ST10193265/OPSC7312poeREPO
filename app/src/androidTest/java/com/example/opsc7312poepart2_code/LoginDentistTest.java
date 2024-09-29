@@ -20,7 +20,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.example.opsc7312poepart2_code.ui.login_client.LoginClientFragment;
 import com.example.opsc7312poepart2_code.ui.login_dentist.LoginDentistFragment;
 import com.example.poe2.MainActivity;
 import com.example.poe2.R;
@@ -43,19 +42,19 @@ public class LoginDentistTest {
         activityScenario.onActivity(activity -> {
             navController = new TestNavHostController(activity);
             navController.setGraph(R.navigation.mobile_navigation);
-            navController.setCurrentDestination(R.id.nav_login_dentist); // Set the start destination
+            navController.setCurrentDestination(R.id.nav_login_dentist); // Set the dentist login start destination
         });
 
-        // Launch the LoginClientFragment
+        // Launch the LoginDentistFragment
         fragmentScenario = FragmentScenario.launchInContainer(LoginDentistFragment.class);
 
         // Set the NavController for the fragment
         fragmentScenario.onFragment(fragment -> {
             Navigation.setViewNavController(fragment.requireView(), navController);
-            // Mock Firebase database and create test user
+            // Initialize Firebase and create a test dentist user
             dbReference = FirebaseDatabase.getInstance().getReference("dentists");
-            // Add the test user data
-            dbReference.child("testUser").child("password").setValue("testPassword");
+            // Add the test dentist user data
+            dbReference.child("testDentist").child("password").setValue("testPassword");
         });
     }
 
@@ -68,16 +67,16 @@ public class LoginDentistTest {
         // Click the login button
         onView(withId(R.id.btnLogin)).perform(click());
 
-        // Wait for a short period to allow for navigation to complete
+        // Wait for Firebase to finish (longer wait to accommodate Firebase delays)
         try {
-            Thread.sleep(2000); // Wait for 2 seconds (adjust as needed)
+            Thread.sleep(5000); // Increase wait time to 5 seconds (adjust based on Firebase speed)
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        // Verify that the user is navigated to the menu after successful login
+        // Verify that the user is navigated to the correct menu after successful login
         fragmentScenario.onFragment(fragment -> {
-            int expectedDestinationId = R.id.nav_menu_client;
+            int expectedDestinationId = R.id.nav_menu_dentist; // Ensure this ID matches the dentist menu destination
             assertEquals(expectedDestinationId, navController.getCurrentDestination().getId());
             Log.i("LoginDentistTest", "Login successful for user: testDentist");
         });
@@ -90,7 +89,7 @@ public class LoginDentistTest {
 
         // Verify that the user remains on the login screen
         fragmentScenario.onFragment(fragment -> {
-            int expectedDestinationId = R.id.nav_login_client;
+            int expectedDestinationId = R.id.nav_login_dentist; // Ensure this ID matches the dentist login destination
             assertEquals(expectedDestinationId, navController.getCurrentDestination().getId());
             Log.w("LoginDentistTest", "Attempted login with empty fields.");
         });

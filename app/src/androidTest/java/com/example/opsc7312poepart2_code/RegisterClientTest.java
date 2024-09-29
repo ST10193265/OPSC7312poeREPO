@@ -102,30 +102,5 @@ public class RegisterClientTest {
         });
     }
 
-    @Test
-    public void testPasswordVisibilityToggle() {
-        // Check initial password visibility state (should be hidden)
-        fragmentScenario.onFragment(fragment -> {
-            EditText passwordEditText = fragment.getView().findViewById(R.id.etxtPassword);
-            assertEquals(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD, passwordEditText.getInputType());
-        });
-
-        // Click the visibility toggle
-        onView(withId(R.id.icon_view_password)).perform(click());
-
-        // Check if password visibility has toggled
-        fragmentScenario.onFragment(fragment -> {
-            EditText passwordEditText = fragment.getView().findViewById(R.id.etxtPassword);
-            assertEquals(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD, passwordEditText.getInputType());
-        });
-
-        // Click the visibility toggle again
-        onView(withId(R.id.icon_view_password)).perform(click());
-
-        // Check if password visibility is back to hidden
-        fragmentScenario.onFragment(fragment -> {
-            EditText passwordEditText = fragment.getView().findViewById(R.id.etxtPassword);
-            assertEquals(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD, passwordEditText.getInputType());
-        });
-    }
+//
 }

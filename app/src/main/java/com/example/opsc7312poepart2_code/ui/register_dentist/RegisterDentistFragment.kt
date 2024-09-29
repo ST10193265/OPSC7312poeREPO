@@ -51,7 +51,7 @@ class RegisterDentistFragment : Fragment() {
         }
 
         binding.iconViewPassword.setOnClickListener {
-            togglePasswordVisibility()
+            togglePasswordVisibility(it)
         }
 
         return binding.root
@@ -71,11 +71,9 @@ class RegisterDentistFragment : Fragment() {
         val phoneNumber = binding.etxtPhoneNumber.text.toString().trim()
 
         if (!isValidInput(name, address, email, username, password, phoneNumber)) {
-            // Validation failed, no need to proceed with registration
             return
         }
 
-        // Continue with registration if validation passes
         registerUser(name, address, email, username, password, phoneNumber)
     }
 
@@ -120,7 +118,6 @@ class RegisterDentistFragment : Fragment() {
     ) {
         val userId = dbReference.push().key ?: return showToast("Failed to generate user ID")
 
-        // Hash and salt the password
         val salt = generateSalt()
         val hashedPassword = hashPassword(password, salt)
 
@@ -168,16 +165,19 @@ class RegisterDentistFragment : Fragment() {
         }
     }
 
-    private fun togglePasswordVisibility() {
+    fun togglePasswordVisibility(view: View) {
         passwordVisible = !passwordVisible
-        binding.etxtPassword.inputType = if (passwordVisible) {
-            InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+
+        if (passwordVisible) {
+            binding.etxtPassword.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            binding.iconViewPassword.setImageResource(R.drawable.visible_icon)
         } else {
-            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            binding.etxtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            binding.iconViewPassword.setImageResource(R.drawable.visible_icon)
         }
 
-        binding.iconViewPassword.setImageResource(if (passwordVisible) R.drawable.visible_icon else R.drawable.visible_icon)
-        binding.etxtPassword.setSelection(binding.etxtPassword.text.length) // Keep cursor at the end
+        // Ensure the cursor stays at the end after toggling
+        binding.etxtPassword.setSelection(binding.etxtPassword.text.length)
     }
 
     private fun showToast(message: String) {

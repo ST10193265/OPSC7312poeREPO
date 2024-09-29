@@ -11,6 +11,8 @@ import com.example.poe2.R
 
 class MenuClientFragment : Fragment() {
 
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

@@ -32,7 +32,7 @@
     <string name="health_zone">Health Zone</string>
     <string name="manage_appointments">Manage Appointments</string>
 
-    <string name="default_web_client_id">227493496295-l4ogpcg7ru66oeeikmtfhf1ab8gvsklu.apps.googleusercontent.com</string>
+    <string name="webclientid" translatable="false">227493496295-l4ogpcg7ru66oeeikmtfhf1ab8gvsklu.apps.googleusercontent.com</string>
 
 
 </resources>

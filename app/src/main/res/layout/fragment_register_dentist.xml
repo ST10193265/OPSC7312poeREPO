@@ -17,7 +17,6 @@
             android:clickable="true"
             android:contentDescription="View Password"
             android:focusable="true"
-            android:onClick="togglePasswordVisibility"
             android:src="@drawable/visible_icon"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("com.google.gms.google-services")
+
+
 }
 
 android {
@@ -107,7 +109,7 @@ androidTestImplementation ("androidx.navigation:navigation-testing:2.5.3")
 implementation ("com.google.firebase:firebase-auth-ktx:21.0.3")
 
 // Google Play Services Authentication (for OAuth, Google sign-in, etc.)
-implementation ("com.google.android.gms:play-services-auth:20.4.1")
+implementation ("com.google.android.gms:play-services-auth:18.0.0")
 
 // Using the new versioning system (optional)
 androidTestImplementation(libs.androidx.junit.v115) // If you're using Gradle version catalogs
@@ -123,8 +125,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.fragment.testing)
+    implementation(libs.firebase.auth)
     androidTestImplementation(libs.junit.junit)
     androidTestImplementation(libs.junit.junit)
+
+
 
 }
 

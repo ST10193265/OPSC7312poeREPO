@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.youtubeview.YoutubeFragment">
+    tools:context=".ui.healthzone.HealthzoneFragment">
 
     <!-- ScrollView to make the content scrollable -->
     <ScrollView
@@ -14,7 +14,7 @@
         <!-- ConstraintLayout to contain all your views -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:padding="16dp">
 
             <ImageButton
@@ -33,7 +33,7 @@
             <TextView
                 android:id="@+id/txtAppName"
                 android:layout_width="140dp"
-                android:layout_height="103dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="60dp"
                 android:text="Dentist Diary"
                 android:textAlignment="center"
@@ -55,12 +55,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <!-- WebView for flossing content -->
             <WebView
                 android:id="@+id/wvFloss"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="match_parent"
                 app:layout_constraintTop_toBottomOf="@id/iLogo"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp" />
 
             <TextView
                 android:id="@+id/txtFloss"
@@ -70,14 +71,15 @@
                 android:gravity="center"
                 android:textStyle="bold"
                 app:layout_constraintTop_toBottomOf="@id/wvFloss"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="16dp" />
 
+            <!-- WebView for dental trouble content -->
             <WebView
                 android:id="@+id/wvDentalTrouble"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="match_parent"
                 app:layout_constraintTop_toBottomOf="@id/txtFloss"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp" />
 
             <TextView
                 android:id="@+id/txtDentalTrouble"
@@ -87,14 +89,15 @@
                 android:gravity="center"
                 android:textStyle="bold"
                 app:layout_constraintTop_toBottomOf="@id/wvDentalTrouble"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="16dp" />
 
+            <!-- WebView for x-rays content -->
             <WebView
                 android:id="@+id/wvXrays"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="match_parent"
                 app:layout_constraintTop_toBottomOf="@id/txtDentalTrouble"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp" />
 
             <TextView
                 android:id="@+id/txtXrays"
@@ -104,14 +107,15 @@
                 android:gravity="center"
                 android:textStyle="bold"
                 app:layout_constraintTop_toBottomOf="@id/wvXrays"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="16dp" />
 
+            <!-- WebView for fillings content -->
             <WebView
                 android:id="@+id/wvFillings"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="match_parent"
                 app:layout_constraintTop_toBottomOf="@id/txtXrays"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp" />
 
             <TextView
                 android:id="@+id/txtFilling"
@@ -121,7 +125,7 @@
                 android:gravity="center"
                 android:textStyle="bold"
                 app:layout_constraintTop_toBottomOf="@id/wvFillings"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="16dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

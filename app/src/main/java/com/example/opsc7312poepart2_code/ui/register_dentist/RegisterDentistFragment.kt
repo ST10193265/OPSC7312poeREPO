@@ -1,16 +1,25 @@
 package com.example.opsc7312poepart2_code.ui.register_dentist
 
+import android.location.Geocoder
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.poe2.BuildConfig
 import com.example.poe2.R
 import com.example.poe2.databinding.FragmentRegisterDentistBinding
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -25,7 +34,11 @@ class RegisterDentistFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var dbReference: DatabaseReference
-
+    private lateinit var placesClient: PlacesClient
+    private var destinationLatLng: LatLng? = null
+    private val apiKey = BuildConfig.MAPS_API_KEY
+    private var placeSuggestions: List<String> = emptyList()
+    private var isAddressValid = false
     private var passwordVisible = false // Track password visibility state
 
     override fun onCreateView(
@@ -37,6 +50,11 @@ class RegisterDentistFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
         dbReference = database.getReference("dentists") // Node for dentists
+
+        // Initialize Places API for autocomplete
+        Places.initialize(requireContext(), apiKey)
+        placesClient = Places.createClient(requireContext())
+
 
         // Set password visibility to hidden by default
         binding.etxtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
@@ -53,6 +71,9 @@ class RegisterDentistFragment : Fragment() {
         binding.iconViewPassword.setOnClickListener {
             togglePasswordVisibility()
         }
+
+        // Setup autocomplete for address
+        setupAutoCompleteForAddress()
 
         return binding.root
     }
@@ -183,4 +204,51 @@ class RegisterDentistFragment : Fragment() {
     private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
+
+    private fun setupAutoCompleteForAddress() {
+        val autoCompleteAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, placeSuggestions)
+        binding.etxtAddress.setAdapter(autoCompleteAdapter)
+
+        binding.etxtAddress.setOnItemClickListener { parent, _, position, _ ->
+            val selectedPlace = parent.getItemAtPosition(position) as String
+            isAddressValid = true
+            findPlace(selectedPlace)
+        }
+
+        binding.etxtAddress.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if (!s.isNullOrEmpty()) {
+                    fetchPlaceSuggestions(s.toString())
+                    isAddressValid = false
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+    }
+
+    private fun fetchPlaceSuggestions(query: String) {
+        val request = FindAutocompletePredictionsRequest.builder()
+            .setQuery(query)
+            .build()
+
+        placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
+            placeSuggestions = response.autocompletePredictions.map { it.getFullText(null).toString() }
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, placeSuggestions)
+            binding.etxtAddress.setAdapter(adapter)
+            adapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun findPlace(placeName: String) {
+        val geocoder = Geocoder(requireContext())
+        val addressList = geocoder.getFromLocationName(placeName, 1)
+        if (addressList != null && addressList.isNotEmpty()) {
+            val address = addressList[0]
+            destinationLatLng = LatLng(address.latitude, address.longitude)
+            // Handle the location in the map if necessary
+        }
+    }
 }
+

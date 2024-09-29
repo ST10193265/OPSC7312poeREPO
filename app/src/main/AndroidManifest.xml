@@ -4,8 +4,8 @@
 
     <meta-data android:name="com.google.android.gms.games.APP_ID"
         android:value="OPSC7312"/>
-
-
+    <!-- the code above was taken and adapted from Android Developers
+    https://developer.android.com/guide/topics/manifest/meta-data-element -->
 
     <application
         android:allowBackup="true"

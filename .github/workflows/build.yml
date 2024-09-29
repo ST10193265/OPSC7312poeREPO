@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest 
 
     steps:
     - name: Checkout the code
@@ -55,7 +55,6 @@ jobs:
         $ANDROID_HOME/emulator/emulator -avd test -no-audio -no-window -no-boot-anim &
         adb wait-for-device
         adb shell input keyevent 82
-
     - name: Wait for Emulator to Boot
       run: |
         adb wait-for-device
@@ -69,4 +68,3 @@ jobs:
     - name: Stop Emulator
       if: always()
       run: adb -s emulator-5554 emu kill
-

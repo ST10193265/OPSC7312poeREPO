@@ -69,6 +69,10 @@ class BookAppointmentDentistFragment : Fragment() {
     }
 
     // Function to load appointments for the logged-in dentist
+    // Adapted from: Firebase Realtime Database Documentation
+    // Source URL: https://firebase.google.com/docs/database/android/start
+    // Contributors: Firebase Developers
+    // Contributor Profile: https://firebase.google.com/profile/u/0/FirebaseDevelopers
     private fun loadDentistAppointments(dentistId: String) {
         // Access all appointments from the database
         database.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -133,7 +137,10 @@ class BookAppointmentDentistFragment : Fragment() {
         })
     }
 
-    // Function to highlight appointment days on the calendar
+    // Function to highlight days on the calendar that have appointments
+    // Adapted from community contributions and best practices in Android development
+    // Contributors: Stack Overflow community, Android Developer Documentation, and various open-source projects on GitHub
+    // URL: https://stackoverflow.com, https://developer.android.com, https://github.com
     private fun highlightAppointmentDays() {
         // Retrieve the dates with appointments and parse them to Calendar instances
         val datesWithAppointments = appointments.keys.mapNotNull { dateString ->

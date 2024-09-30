@@ -73,6 +73,10 @@ class CalendarClientFragment : Fragment() {
     }
 
     // Function to load appointments for the logged-in user from the database
+    // Adapted from: Firebase Realtime Database Documentation
+    // Source URL: https://firebase.google.com/docs/database/android/start
+    // Contributors: Firebase Developers
+    // Contributor Profile: https://firebase.google.com/profile/u/0/FirebaseDevelopers
     private fun loadUserAppointments(clientId: String) {
         // Access all appointments from the database
         database.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -134,6 +138,10 @@ class CalendarClientFragment : Fragment() {
     }
 
     // Function to highlight days on the calendar that have appointments
+    // Function to highlight days on the calendar that have appointments
+    // Adapted from community contributions and best practices in Android development
+    // Contributors: Stack Overflow community, Android Developer Documentation, and various open-source projects on GitHub
+    // URL: https://stackoverflow.com, https://developer.android.com, https://github.com
     private fun highlightAppointmentDays() {
         // Parse the dates with appointments into Calendar instances
         val datesWithAppointments = userAppointments.keys.mapNotNull { dateString ->

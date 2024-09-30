@@ -22,6 +22,22 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class NotificationsClientFragment : Fragment() {
 
+    /*
+    * Code attributions:
+    *
+    * Auther: freeCodeCamp.org; Python API Development - Comprehensive Course for Beginners: link- https://youtu.be/0sOvCWFmrtA
+    * Auther: Phillipp Lackner; Local Notifications in Android - The Full Guide (Android Studio Tutorial) : link - https://youtu.be/LP623htmWcI
+    * Auther: Code With Cal; Daily Calendar View Android Studio Tutorial : link - https://youtu.be/Aig99t-gNqM
+    * Auther: Foxandroid; How to Add SearchView in Android App using Kotlin | SearchView | Kotlin | Android studio : link - https://youtu.be/oE8nZRJ9vxA
+    *
+    * AI Tools
+    * Gemini
+    * ChatGpt
+    * Amazon Q
+    * CoPilot
+    *
+    * */
+
     private var _binding: FragmentNotificationsClientBinding? = null
     private val binding get() = _binding!!
 

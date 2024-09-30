@@ -89,7 +89,7 @@ This process of branching, committing, pushing, and pull requests helped maintai
 ##Screenshots
 Dentist Features:
 Book Appointment -
-
+![Screenshot of My Application](https://github.com/user-attachments/assets/bffd9531-3d67-4502-886a-2cd8adf09c08)
 <img src="[UR](https://github.com/user-attachments/assets/bffd9531-3d67-4502-886a-2cd8adf09c08)" alt="Alt text" width="500"/>
 
 

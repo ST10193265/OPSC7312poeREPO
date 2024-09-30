@@ -49,19 +49,24 @@ class NotificationsClientFragment : Fragment() {
 
     private fun loadNotifications() {
         val db = FirebaseFirestore.getInstance()
-        db.collection("notifications") // Replace with your Firestore collection name
-            .get()
-            .addOnSuccessListener { documents ->
-                notificationsList.clear() // Clear existing notifications
-                for (document in documents) {
-                    val title = document.getString("title") ?: "No Title"
-                    val body = document.getString("body") ?: "No Body"
-                    notificationsList.add("$title: $body") // Format notification as needed
+        db.collection("notifications")
+            .addSnapshotListener { snapshots, e ->
+                if (e != null) {
+                    Toast.makeText(context, "Failed to load notifications: ${e.message}", Toast.LENGTH_SHORT).show()
+                    return@addSnapshotListener
                 }
-                notificationsAdapter.notifyDataSetChanged() // Notify the adapter of data changes
-            }
-            .addOnFailureListener { exception ->
-                Toast.makeText(context, "Failed to load notifications: ${exception.message}", Toast.LENGTH_SHORT).show()
+
+                if (snapshots != null) {
+                    notificationsList.clear()
+                    for (document in snapshots) {
+                        val title = document.getString("title") ?: "No Title"
+                        val body = document.getString("body") ?: "No Body"
+                        notificationsList.add("$title: $body")
+                    }
+                    notificationsAdapter.notifyDataSetChanged()
+                } else {
+                    Toast.makeText(context, "No notifications found.", Toast.LENGTH_SHORT).show()
+                }
             }
     }
 

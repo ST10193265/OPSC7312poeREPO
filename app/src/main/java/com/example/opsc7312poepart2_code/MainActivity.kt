@@ -15,7 +15,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.poe2.R
 import com.example.poe2.databinding.ActivityMainBinding
 import com.google.firebase.FirebaseApp
-
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 class MainActivity : AppCompatActivity() {
 
 
@@ -33,6 +34,12 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.appBarMain.toolbar)
         FirebaseApp.initializeApp(this)
 
+        // Enable Firestore offline persistence
+        val firestore = FirebaseFirestore.getInstance()
+        val settings = FirebaseFirestoreSettings.Builder()
+            .setPersistenceEnabled(true)
+            .build()
+        firestore.firestoreSettings = settings
 
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView

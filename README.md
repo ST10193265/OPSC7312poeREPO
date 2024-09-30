@@ -86,6 +86,8 @@ After the merge, all team members would pull the latest changes from the main br
 
 This process of branching, committing, pushing, and pull requests helped maintain a structured workflow and ensured that our team could work on the project collaboratively without disrupting each other's progress. By leveraging both Android Studio’s VCS integration and GitHub’s powerful code review and conflict resolution features, we were able to maintain a smooth development cycle, keep the codebase clean, and track changes efficiently.
 
+Youtube link: https://youtu.be/f5jRrUuLCeE
+
 ##Screenshots
 Dentist Features:
 Book Appointment -
@@ -108,7 +110,7 @@ Helathzone -
 ![healthzone](https://github.com/user-attachments/assets/49cdad5b-f59b-4d4f-9906-330d1f2b81f6)
 
 
-Youtube link: https://youtu.be/f5jRrUuLCeE
+
 
 
 

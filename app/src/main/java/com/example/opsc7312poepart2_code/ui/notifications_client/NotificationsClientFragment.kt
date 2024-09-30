@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.Toast
@@ -19,6 +20,8 @@ class NotificationsClientFragment : Fragment() {
     private var _binding: FragmentNotificationsClientBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var btnViewNotifications: Button
+    private lateinit var notificationsListView: ListView
     private lateinit var notificationsAdapter: ArrayAdapter<String>
     private val notificationsList = mutableListOf<String>()
 
@@ -33,11 +36,20 @@ class NotificationsClientFragment : Fragment() {
         notificationsAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, notificationsList)
         binding.notificationsListView.adapter = notificationsAdapter // Access ListView through binding
 
+        // Initialize views
+        btnViewNotifications = view.findViewById(R.id.btnViewNotifications)
+        notificationsListView = view.findViewById(R.id.notificationsListView)
+
         // Load notifications from Firestore
         loadNotifications()
 
         // Initialize the ImageButtons
         val ibtnHome: ImageButton = binding.ibtnHome // Access ImageButton through binding
+
+        // Set up the button click listener
+        btnViewNotifications.setOnClickListener {
+            loadNotifications()
+        }
 
         // Set OnClickListener for the Home button
         ibtnHome.setOnClickListener {

@@ -1,6 +1,6 @@
 package com.example.poe2.ui.notifications_dentist
 
-import androidx.fragment.app.viewModels
+
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,18 +16,18 @@ class NotificationsDentistFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_notifications_dentist, container, false)
 
-        // Initialize the ImageButtons
+        // Initialize views
         val ibtnHome: ImageButton = view.findViewById(R.id.ibtnHome)
 
-        // Set OnClickListener for the Book Appointment button
+        // Set the home button listener to navigate to the main menu
         ibtnHome.setOnClickListener {
-            // Navigate to the BookAppointmentFragment using the NavController
             findNavController().navigate(R.id.action_nav_notifications_dentist_to_nav_menu_dentist)
         }
 
-        return view // Make sure to return the view after setting up everything
+
+
+        return view
     }
 }

@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from random import randrange
 import firebase_admin
 from firebase_admin import credentials, initialize_app, db, messaging
+from fastapi.middleware.cors import CORSMiddleware
 import logging
 from typing import Union
 import bcrypt
@@ -36,6 +37,15 @@ firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://opsc7312database-default-rtdb.firebaseio.com'
 })
 
+# Allows CORS for Android app
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 class Users(BaseModel):
     __tablename__ = "users"
 
@@ -46,15 +56,16 @@ class Users(BaseModel):
     username: str
     password: str
 
-class Appointments(BaseModel):
-    __tablename__ = "appointments"
-
-    doctor: str
-    patientname: str
+class Appointment(BaseModel):
+    id: int
+    user_id: str
+    dentist: str
     date: str
-    time: str
+    slot: str
     description: str
-    cancel_booking: bool
+
+# In-memory database simulation
+appointments = []
 
 class Dentists(BaseModel):
     __tablename__ = "dentists"
@@ -79,9 +90,9 @@ def hash_password(password: str) -> str:
 async def root():
     return {"message": f"Hello World! Secret = {env['MY_VARIABLE']}"}
 
-my_appointments = [{"doctor": "Doctor", "patientname": "Chris Phillips", "date": "Date", "time": "Time", "description": "Description", "id": 1},
-                   {"doctor": "Dr. Bhika", "patientname": "Pearl Thusi", "date": "19/09/2024", "time": "15:00", 
-                    "description": "Wisdom teeth aching", "cancel_booking": False, "id": 2}]
+# my_appointments = [{"doctor": "Doctor", "patientname": "Chris Phillips", "date": "Date", "time": "Time", "description": "Description", "id": 1},
+#                    {"doctor": "Dr. Bhika", "patientname": "Pearl Thusi", "date": "19/09/2024", "time": "15:00", 
+#                     "description": "Wisdom teeth aching", "cancel_booking": False, "id": 2}]
 
 my_users = [{"name": "Thabo", "surname": "Jobe", "email": "jobe@jobe.com", "phonenumber": "0828899123", 
              "username": "Jobe_7", "password": "#!Jobe123", "id": 1}, {"name": "Claire", "surname": "Gill", 
@@ -91,10 +102,10 @@ my_users = [{"name": "Thabo", "surname": "Jobe", "email": "jobe@jobe.com", "phon
 my_dentists = [{"name": "Sandesh", "surname": "Bhika", "email": "drbhika@gp.com", "phonenumber": "0828899123","address": "728 Berk Crescent, Sandton",
                 "username": "DrBhika", "password": "#!Bhika77", "id": 1}]
 
-def find_appointment(id):
-    for p in my_appointments:
-        if p["id"] == id:
-            return p
+# def find_appointment(id):
+#     for p in my_appointments:
+#         if p["id"] == id:
+#             return p
         
 def find_user(id):
     for u in my_users:
@@ -111,10 +122,10 @@ def find_index_user(id):
         if p['id'] == id:
             return i
         
-def find_index_appointment(id):
-    for i, p in enumerate(my_appointments):
-        if p['id'] == id:
-            return i
+# def find_index_appointment(id):
+#     for i, p in enumerate(my_appointments):
+#         if p['id'] == id:
+#             return i
         
 
 async def send_push_notification(title: str, body: str):
@@ -283,37 +294,20 @@ async def update_dentist(id: Union[int, str], dentist: Dentists):
 
 # Get Appointment
 @app.get('/appointments')
-async def get_appointments():
-    ref = db.reference('appointments')
-    appointments = ref.get()
-    return {"data": appointments}
+def get_appointments():
+    return appointments
 
 # Get Appointment
 @app.get('/appointments/{id}')
-async def get_appointment(id: Union[int, str], response: Response):
-    #appointment = find_appointment(id)
-    ref_id = str(id)
-    ref = db.reference(f'appointments/{ref_id}')
-    appointment = ref.get()
-    if not appointment:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
-                            detail=f"appointment with id: {ref_id} was not found")
-    return {"appointment_detail": appointment}
+def get_appointment(id: Union[int, str], response: Response):
+    user_appointments = [app for app in appointments if app.user_id == id]
+    return user_appointments
 
 # Create Appointment
 @app.post('/appointments', status_code=status.HTTP_201_CREATED)
-async def create_appointment(appointment: Appointments):
-    appointment_dict = appointment.dict()
-    appointment_dict['id'] = str(randrange(0, 10000000))
-
-    #my_appointments.append(appointment_dict)
-    ref = db.reference('appointments')
-    new_appointment_ref = ref.child(appointment_dict['id'])
-    new_appointment_ref.set(appointment_dict)
-
-    await send_push_notification("New Appointment", f"You have a new appointment with {appointment_dict['doctor']}")
-
-    return {"data": appointment_dict}
+def create_appointment(appointment: Appointment):
+    appointments.append(appointment)
+    return appointment
 
 # Delete Appointment
 @app.delete("/appointments/{id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -332,7 +326,7 @@ async def delete_appointment(id: Union[int, str]):
 
 # Update Appointment
 @app.put("/appointments/{id}")
-async def update_appointment(id: Union[int, str], appointment: Appointments):
+async def update_appointment(id: Union[int, str], appointment: Appointment):
     #index = find_index_appointment(id)
     ref_id = str(id)
     ref = db.reference(f'appointments/{ref_id}')

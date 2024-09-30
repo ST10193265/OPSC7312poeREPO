@@ -25,7 +25,7 @@ class BookAppointmentDentistFragment : Fragment() {
         // Set OnClickListener for the Home button
         ibtnHome.setOnClickListener {
             // Navigate back to the MenuDentistFragment using the NavController
-            findNavController().navigate(R.id.action_nav_book_appointment_dentist_to_nav_menu_dentist)
+            //findNavController().navigate(R.id.action_nav_book_appointment_dentist_to_nav_menu_dentist)
         }
 
         return view // Return the view after setting up everything

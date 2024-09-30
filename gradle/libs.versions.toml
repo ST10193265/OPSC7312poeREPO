@@ -49,6 +49,7 @@ robolectric = "4.8"
 junitJunit = "4.12"
 googleGmsGoogleServices = "4.4.2"
 firebaseAuth = "23.0.0"
+firebaseFirestoreKtx = "25.1.0"
 [libraries]
 android-maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "androidMapsUtils" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
@@ -105,6 +106,7 @@ prolificinteractive-material-calendarview = { module = "com.github.prolificinter
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 junit-junit = { group = "junit", name = "junit", version.ref = "junitJunit" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 
 
 [plugins]

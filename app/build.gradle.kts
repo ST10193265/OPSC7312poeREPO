@@ -131,6 +131,7 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.fragment.testing)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore.ktx)
     androidTestImplementation(libs.junit.junit)
     androidTestImplementation(libs.junit.junit)
 

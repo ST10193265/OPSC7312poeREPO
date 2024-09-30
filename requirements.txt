@@ -1,0 +1,4 @@
+uvicorn[standard]
+fastapi
+firebase-admin
+bcrypt==3.2.0

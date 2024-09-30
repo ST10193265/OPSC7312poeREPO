@@ -49,23 +49,36 @@ class NotificationsClientFragment : Fragment() {
 
     private fun loadNotifications() {
         val db = FirebaseFirestore.getInstance()
-        db.collection("notifications")
+
+        // Listen for changes in the "appointments" collection
+        db.collection("appointments")
             .addSnapshotListener { snapshots, e ->
                 if (e != null) {
-                    Toast.makeText(context, "Failed to load notifications: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Failed to load appointments: ${e.message}", Toast.LENGTH_SHORT).show()
                     return@addSnapshotListener
                 }
 
                 if (snapshots != null) {
                     notificationsList.clear()
+
+                    // Loop through the snapshots (appointments)
                     for (document in snapshots) {
-                        val title = document.getString("title") ?: "No Title"
-                        val body = document.getString("body") ?: "No Body"
-                        notificationsList.add("$title: $body")
+                        val dentist = document.getString("dentist") ?: "Unknown Dentist"
+                        val slot = document.getString("slot") ?: "Unknown Slot"
+                        val date = document.getString("date") ?: "Unknown Date"
+                        val description = document.getString("description") ?: "No Description"
+
+                        // Format the notification message
+                        val notificationMessage = "Appointment with $dentist on $date at $slot: $description"
+
+                        // Add the notification message to the list
+                        notificationsList.add(notificationMessage)
                     }
+
+                    // Notify the adapter that the data has changed
                     notificationsAdapter.notifyDataSetChanged()
                 } else {
-                    Toast.makeText(context, "No notifications found.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "No appointments found.", Toast.LENGTH_SHORT).show()
                 }
             }
     }

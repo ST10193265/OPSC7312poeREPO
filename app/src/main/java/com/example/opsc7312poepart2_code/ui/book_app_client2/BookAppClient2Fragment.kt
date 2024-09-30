@@ -16,6 +16,7 @@ import java.util.*
 
 class BookAppClient2Fragment : Fragment() {
 
+    // UI elements
     private lateinit var spinnerSlots: Spinner
     private lateinit var txtSelectedDentist: TextView
     private lateinit var editTextDescription: EditText
@@ -24,9 +25,11 @@ class BookAppClient2Fragment : Fragment() {
     private lateinit var btnCancel: Button
     private lateinit var btnHome: ImageButton
 
+    // Firebase Database references
     private lateinit var database: DatabaseReference
     private lateinit var dentistDatabase: DatabaseReference // Reference for dentists
 
+    // Variables to hold selected date and dentist ID
     private var selectedDate: String? = null // Variable to store the selected date
     private var dentistId: String? = null // Variable to hold the dentist ID
 
@@ -34,9 +37,10 @@ class BookAppClient2Fragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_book_app_client2, container, false)
 
-        // Initialize views
+        // Initialize UI elements
         spinnerSlots = view.findViewById(R.id.sTime)
         txtSelectedDentist = view.findViewById(R.id.txtSelectedDentist)
         editTextDescription = view.findViewById(R.id.etxtDescription)
@@ -45,13 +49,14 @@ class BookAppClient2Fragment : Fragment() {
         btnCancel = view.findViewById(R.id.btnCancel)
         btnHome = view.findViewById(R.id.ibtnHome)
 
-        // Firebase Database initialization
+        // Initialize Firebase Database references
         database = FirebaseDatabase.getInstance().getReference("appointments") // Appointments reference
         dentistDatabase = FirebaseDatabase.getInstance().getReference("dentists") // Dentists reference
 
-        // Set the dentist name to the selected dentist
+        // Get the selected dentist's name from arguments and set it to the TextView
         val selectedDentist = arguments?.getString("selectedDentist")
         txtSelectedDentist.text = selectedDentist
+        Log.d("BookAppClient2Fragment", "Selected Dentist: $selectedDentist")
 
         // Populate the spinner with hourly slots
         val slots = generateTimeSlots(8, 16) // From 8 AM to 4 PM
@@ -59,36 +64,36 @@ class BookAppClient2Fragment : Fragment() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerSlots.adapter = adapter
 
+        // Set click listener for the date button
         btnDate.setOnClickListener {
-            // Handle date selection
+            // Show date picker dialog for selecting a date
             showDatePicker()
         }
 
+        // Set click listener for the cancel button
         btnCancel.setOnClickListener {
-          // clears all the fields
+            // Clear all input fields
             clearInputs()
         }
 
-
+        // Set click listener for the home button
         btnHome.setOnClickListener {
-            // Navigate back to home (uncomment to enable)
+            // Navigate back to home
             findNavController().navigate(R.id.action_nav_book_app_client2_to_nav_menu_client)
         }
 
-        // Handle book button click
+        // Set click listener for the book button
         btnBook.setOnClickListener {
-            val selectedSlot = spinnerSlots.selectedItem.toString()
+            val selectedSlot = spinnerSlots.selectedItem.toString() // Get the selected time slot
             val description = editTextDescription.text.toString() // Get the description
 
             // Check if a date has been selected before booking
             if (selectedDate != null) {
-                Log.d(
-                    "BookAppClient2Fragment",
-                    "Fetching dentist ID for: $selectedDentist"
-                )
+                Log.d("BookAppClient2Fragment", "Fetching dentist ID for: $selectedDentist")
                 getDentistIdByName(selectedDentist ?: "")
             } else {
                 Toast.makeText(requireContext(), "Please select a date.", Toast.LENGTH_SHORT).show()
+                Log.w("BookAppClient2Fragment", "Date not selected before booking attempt.")
             }
         }
 
@@ -98,13 +103,14 @@ class BookAppClient2Fragment : Fragment() {
     // Function to generate time slots from startHour to endHour
     private fun generateTimeSlots(startHour: Int, endHour: Int): List<String> {
         val slots = mutableListOf<String>()
-        for (hour in startHour until endHour + 1) { // include endHour
+        for (hour in startHour until endHour + 1) { // Include endHour
             for (minute in listOf(0, 30)) { // Every 30 minutes
                 val time = String.format(
                     "%02d:%02d %s",
                     hour % 12, minute, if (hour < 12) "AM" else "PM"
                 )
                 slots.add(time)
+                Log.d("BookAppClient2Fragment", "Generated time slot: $time") // Log each generated slot
             }
         }
         return slots
@@ -130,18 +136,18 @@ class BookAppClient2Fragment : Fragment() {
             requireContext(),
             { _, selectedYear, selectedMonth, selectedDay ->
                 selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear" // Format the date
-
-                // Log the selected date
-                Log.d("BookAppClient2Fragment", "Selected Date: $selectedDate")
+                Log.d("BookAppClient2Fragment", "Selected Date: $selectedDate") // Log the selected date
             },
             year, month, day
         )
 
         datePickerDialog.show()
+        Log.d("BookAppClient2Fragment", "DatePicker dialog shown.")
     }
 
     // Method to get the dentist ID based on the selected dentist's name
     private fun getDentistIdByName(dentistName: String) {
+        Log.d("BookAppClient2Fragment", "Fetching dentist ID for: $dentistName")
         dentistDatabase.orderByChild("name").equalTo(dentistName).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
@@ -149,6 +155,7 @@ class BookAppClient2Fragment : Fragment() {
                         dentistId = dentistSnapshot.key // Get the dentist ID
                         Log.d("BookAppClient2Fragment", "Dentist ID found: $dentistId")
                         val selectedSlot = spinnerSlots.selectedItem.toString()
+                        // Proceed to book appointment with the fetched dentist ID
                         bookAppointment(dentistName, selectedSlot, selectedDate!!, editTextDescription.text.toString(), loggedInClientUserId ?: "", dentistId ?: "")
                     }
                 } else {
@@ -169,6 +176,7 @@ class BookAppClient2Fragment : Fragment() {
         val appointmentId = database.push().key
 
         if (appointmentId != null) {
+            // Prepare booking details
             val bookingDetails = mapOf(
                 "appointmentId" to appointmentId, // Saving the unique appointment ID
                 "dentist" to dentist,              // Saving the selected dentist's name

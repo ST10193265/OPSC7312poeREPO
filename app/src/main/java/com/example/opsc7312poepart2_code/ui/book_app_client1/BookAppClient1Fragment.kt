@@ -9,7 +9,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.ListView
-import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -18,8 +17,8 @@ import com.google.firebase.database.*
 
 class BookAppClient1Fragment : Fragment() {
 
-    private lateinit var dentistList: ArrayList<String>      // List to store dentist names
-    private lateinit var listViewAdapter: ArrayAdapter<String>  // Adapter for the ListView
+    private lateinit var dentistList: ArrayList<String> // List to store dentist names
+    private lateinit var listViewAdapter: ArrayAdapter<String> // Adapter for the ListView
     private lateinit var databaseReference: DatabaseReference // Firebase Database reference
 
     // Log tag for debugging
@@ -32,8 +31,7 @@ class BookAppClient1Fragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_book_app_client1, container, false)
 
-        // Initialize the SearchView and ListView
-        val searchView = view.findViewById<SearchView>(R.id.searchbar)
+        // Initialize the ListView
         val listView = view.findViewById<ListView>(R.id.listofDentists)
 
         // Initialize ImageButtons
@@ -51,22 +49,9 @@ class BookAppClient1Fragment : Fragment() {
         // Fetch dentists from Firebase and populate the ListView
         fetchDentists()
 
-        // Handle search functionality: filter the list based on the query
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                Log.d(TAG, "Search Query: $newText") // Log the search query
-                listViewAdapter.filter.filter(newText)  // Filter dentists as user types
-                return false
-            }
-        })
-
         // Handle ListView item click: navigate to BookAppClient2Fragment with selected dentist
         listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-            val selectedDentist = listViewAdapter.getItem(position)  // Get the dentist from the filtered list
+            val selectedDentist = listViewAdapter.getItem(position)  // Get the dentist from the list
             Log.d(TAG, "Selected Dentist: $selectedDentist")  // Log the selected dentist
             if (selectedDentist != null) {
                 try {
@@ -93,6 +78,7 @@ class BookAppClient1Fragment : Fragment() {
         }
 
         ibtnHome.setOnClickListener {
+            // Navigate back to the client menu
             findNavController().navigate(R.id.action_nav_book_app_client1_to_nav_menu_client)
         }
 

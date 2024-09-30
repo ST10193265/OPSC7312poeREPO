@@ -66,6 +66,8 @@ class NotificationsClientFragment : Fragment() {
     }
 
     private fun loadNotifications() {
+        val currentUserId = "user123" // Replace with the actual ID of the logged-in user
+
         // Listen for changes in the "appointments" table in Firebase Realtime Database
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -77,12 +79,16 @@ class NotificationsClientFragment : Fragment() {
                     val slot = appointmentSnapshot.child("slot").getValue(String::class.java) ?: "Unknown Slot"
                     val date = appointmentSnapshot.child("date").getValue(String::class.java) ?: "Unknown Date"
                     val description = appointmentSnapshot.child("description").getValue(String::class.java) ?: "No Description"
+                    val userId = appointmentSnapshot.child("userId").getValue(String::class.java) ?: ""
 
-                    // Format the notification message
-                    val notificationMessage = "Appointment with $dentist on $date at $slot: $description"
+                    // Check if the appointment belongs to the logged-in user
+                    if (userId == currentUserId) {
+                        // Format the notification message
+                        val notificationMessage = "Appointment with $dentist on $date at $slot: $description"
 
-                    // Add the notification message to the list
-                    notificationsList.add(notificationMessage)
+                        // Add the notification message to the list
+                        notificationsList.add(notificationMessage)
+                    }
                 }
 
                 // Notify the adapter that the data has changed

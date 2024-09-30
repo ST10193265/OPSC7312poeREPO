@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import com.example.poe2.R
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
@@ -26,6 +27,7 @@ class BookAppClient2Fragment : Fragment() {
     private lateinit var database: DatabaseReference
 
     private var selectedDate: String? = null // Variable to store the selected date
+    private var dentist: String? = null // Declare a variable for dentist
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,17 +69,22 @@ class BookAppClient2Fragment : Fragment() {
 
             // Check if a date has been selected before booking
             if (selectedDate != null) {
-                val dentistId = "actualDentistId" // Replace with actual dentist ID logic
-                val userId = "actualUserId" // Replace with actual user ID logic
+                val userId = getUserId() // Get the actual user ID
+                val dentistId = arguments?.getString("dentistId") // Get the dentist ID from the arguments
 
-                Log.d("BookAppClient2Fragment", "Booking appointment with: Dentist: $selectedDentist, Slot: $selectedSlot, Date: $selectedDate, Description: $description")
-                bookAppointment(selectedDentist ?: "", selectedSlot, selectedDate!!, description, dentistId, userId)
+                Log.d("BookAppClient2Fragment", "Booking appointment with: Dentist: $dentist, Slot: $selectedSlot, Date: $selectedDate, Description: $description")
+                bookAppointment(dentist ?: "", selectedSlot, selectedDate!!, description, dentistId ?: "", userId) // Pass dentistId and userId
             } else {
                 Toast.makeText(requireContext(), "Please select a date.", Toast.LENGTH_SHORT).show()
             }
         }
 
         return view
+    }
+
+    private fun getUserId(): String {
+        val user = FirebaseAuth.getInstance().currentUser
+        return user?.uid ?: "Unknown User" // Replace with actual handling if user is null
     }
 
     // Function to generate time slots from startHour to endHour

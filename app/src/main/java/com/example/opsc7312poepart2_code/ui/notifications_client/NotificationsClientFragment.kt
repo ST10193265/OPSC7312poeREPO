@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.Toast
@@ -19,6 +20,8 @@ class NotificationsClientFragment : Fragment() {
     private var _binding: FragmentNotificationsClientBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var btnViewNotifications: Button
+    private lateinit var notificationsListView: ListView
     private lateinit var notificationsAdapter: ArrayAdapter<String>
     private val notificationsList = mutableListOf<String>()
 
@@ -33,11 +36,20 @@ class NotificationsClientFragment : Fragment() {
         notificationsAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, notificationsList)
         binding.notificationsListView.adapter = notificationsAdapter // Access ListView through binding
 
+        // Initialize views
+        btnViewNotifications = view.findViewById(R.id.btnViewNotifications)
+        notificationsListView = view.findViewById(R.id.notificationsListView)
+
         // Load notifications from Firestore
         loadNotifications()
 
         // Initialize the ImageButtons
         val ibtnHome: ImageButton = binding.ibtnHome // Access ImageButton through binding
+
+        // Set up the button click listener
+        btnViewNotifications.setOnClickListener {
+            loadNotifications()
+        }
 
         // Set OnClickListener for the Home button
         ibtnHome.setOnClickListener {
@@ -49,19 +61,37 @@ class NotificationsClientFragment : Fragment() {
 
     private fun loadNotifications() {
         val db = FirebaseFirestore.getInstance()
-        db.collection("notifications") // Replace with your Firestore collection name
-            .get()
-            .addOnSuccessListener { documents ->
-                notificationsList.clear() // Clear existing notifications
-                for (document in documents) {
-                    val title = document.getString("title") ?: "No Title"
-                    val body = document.getString("body") ?: "No Body"
-                    notificationsList.add("$title: $body") // Format notification as needed
+
+        // Listen for changes in the "appointments" collection
+        db.collection("appointments")
+            .addSnapshotListener { snapshots, e ->
+                if (e != null) {
+                    Toast.makeText(context, "Failed to load appointments: ${e.message}", Toast.LENGTH_SHORT).show()
+                    return@addSnapshotListener
                 }
-                notificationsAdapter.notifyDataSetChanged() // Notify the adapter of data changes
-            }
-            .addOnFailureListener { exception ->
-                Toast.makeText(context, "Failed to load notifications: ${exception.message}", Toast.LENGTH_SHORT).show()
+
+                if (snapshots != null) {
+                    notificationsList.clear()
+
+                    // Loop through the snapshots (appointments)
+                    for (document in snapshots) {
+                        val dentist = document.getString("dentist") ?: "Unknown Dentist"
+                        val slot = document.getString("slot") ?: "Unknown Slot"
+                        val date = document.getString("date") ?: "Unknown Date"
+                        val description = document.getString("description") ?: "No Description"
+
+                        // Format the notification message
+                        val notificationMessage = "Appointment with $dentist on $date at $slot: $description"
+
+                        // Add the notification message to the list
+                        notificationsList.add(notificationMessage)
+                    }
+
+                    // Notify the adapter that the data has changed
+                    notificationsAdapter.notifyDataSetChanged()
+                } else {
+                    Toast.makeText(context, "No appointments found.", Toast.LENGTH_SHORT).show()
+                }
             }
     }
 

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.opsc7312poepart2_code.ui.bokk_appointment_client_2.BookAppointmentClient2Fragment">
+    tools:context="com.example.opsc7312poepart2_code.ui.book_app_client2.BookAppClient2Fragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -20,10 +20,10 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.154"
+            app:layout_constraintHorizontal_bias="0.143"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.976" />
+            app:layout_constraintVertical_bias="0.755" />
 
         <Button
             android:id="@+id/btnCancel"
@@ -38,7 +38,7 @@
             app:layout_constraintHorizontal_bias="0.67"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.976" />
+            app:layout_constraintVertical_bias="0.755" />
 
         <ImageButton
             android:id="@+id/ibtnHome"
@@ -79,106 +79,107 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.029" />
+            app:layout_constraintVertical_bias="0.009" />
 
         <TextView
-            android:id="@+id/TxtBookApp"
+            android:id="@+id/txtBookApp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Book Appointment:"
-            android:textStyle=""
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.08"
+            app:layout_constraintHorizontal_bias="0.054"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.199" />
+            app:layout_constraintVertical_bias="0.178" />
 
         <TextView
-            android:id="@+id/txtxSelectedDentist"
+            android:id="@+id/txtSelectedDentist"
             android:layout_width="272dp"
-            android:layout_height="78dp"
-            android:text="selected dentist details"
+            android:layout_height="wrap_content"
+            android:text="Selected dentist details:"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.165"
+            app:layout_constraintHorizontal_bias="0.179"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.257" />
+            app:layout_constraintVertical_bias="0.223" />
 
         <TextView
-            android:id="@+id/txtDate"
+            android:id="@+id/txtSelectDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Date:"
+            android:padding="8dp"
+            android:text="Please select a date:"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.065"
+            app:layout_constraintHorizontal_bias="0.045"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.356" />
-
-        <CalendarView
-            android:id="@+id/calendar"
-            android:layout_width="328dp"
-            android:layout_height="303dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.807"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.574"
-            tools:layout_editor_absoluteY="249dp" />
+            app:layout_constraintVertical_bias="0.291" />
 
         <TextView
-            android:id="@+id/txtxTime"
+            android:id="@+id/txtTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Avaliable Time:"
+            android:text="Available Time:"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.079"
+            app:layout_constraintHorizontal_bias="0.047"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.797" />
+            app:layout_constraintVertical_bias="0.483" />
 
         <TextView
             android:id="@+id/txtDescription"
-            android:layout_width="75dp"
-            android:layout_height="24dp"
+            android:layout_width="103dp"
+            android:layout_height="28dp"
             android:text="Description:"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.083"
+            app:layout_constraintHorizontal_bias="0.038"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.872" />
+            app:layout_constraintVertical_bias="0.561" />
 
         <Spinner
-            android:id="@+id/spinner"
+            android:id="@+id/sTime"
             android:layout_width="231dp"
             android:layout_height="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.794"
+            app:layout_constraintHorizontal_bias="0.755"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.81" />
+            app:layout_constraintVertical_bias="0.49" />
 
         <EditText
             android:id="@+id/etxtDescription"
-            android:layout_width="198dp"
-            android:layout_height="34dp"
+            android:layout_width="214dp"
+            android:layout_height="57dp"
             android:ems="10"
             android:inputType="text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.558"
+            app:layout_constraintHorizontal_bias="0.69"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.87" />
+            app:layout_constraintVertical_bias="0.586" />
 
-
+        <Button
+            android:id="@+id/btnDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/lightblue"
+            android:text="Select a Date"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.155"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.373" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

@@ -1,12 +1,14 @@
 package com.example.poe2.ui.menu_client
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.navigation.fragment.findNavController
+import com.example.opsc7312poepart2_code.ui.login_dentist.LoginDentistFragment.Companion.loggedInDentistUserId
 import com.example.poe2.R
 
 class MenuClientFragment : Fragment() {
@@ -30,8 +32,9 @@ class MenuClientFragment : Fragment() {
 
         // Set OnClickListener for Book Appointment button
         ibtnBookAppointments.setOnClickListener {
-            // Navigate to the BookAppointmentFragment using the NavController
-            findNavController().navigate(R.id.action_nav_menu_client_to_nav_book_appointment_client)
+            // Navigate to the BookAppointmentClientFragment1 using the NavController
+            findNavController().navigate(R.id.action_nav_menu_client_to_nav_book_app_client1)
+            Log.e("Book App Client 1", "button clicked")
         }
 
         // Set OnClickListener for Settings button

@@ -8,11 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import com.example.opsc7312poepart2_code.ui.login_client.LoginClientFragment.Companion.loggedInClientUserId
-import com.example.poe2.R
-import com.google.firebase.database.*
 import java.util.*
+
 
 class BookAppClient2Fragment : Fragment() {
 
@@ -182,9 +179,16 @@ class BookAppClient2Fragment : Fragment() {
             // Log the booking details before saving
             Log.d("BookAppClient2Fragment", "Booking Details: $bookingDetails")
 
+
             // Save booking details to Firebase under "appointments"
             database.child(appointmentId).setValue(bookingDetails)
+
+            // Save booking details to Firebase database (for appointments)
+            database.child(bookingId).setValue(bookingDetails)
+
                 .addOnSuccessListener {
+                    // Add notification to Firestore
+                    addNotificationToFirestore(dentist, slot, date, description)
                     Toast.makeText(requireContext(), "Appointment booked successfully!", Toast.LENGTH_SHORT).show()
                     clearInputs()
                 }
@@ -195,5 +199,21 @@ class BookAppClient2Fragment : Fragment() {
         } else {
             Log.e("BookAppClient2Fragment", "Failed to generate appointment ID")
         }
+    }
+
+    // Function to add a notification to Firestore
+    private fun addNotificationToFirestore(dentist: String, slot: String, date: String, description: String) {
+        val db = FirebaseFirestore.getInstance()
+        val notification = mapOf(
+            "title" to "Appointment Booked with $dentist",
+            "body" to "Slot: $slot, Date: $date, Description: $description"
+        )
+        db.collection("notifications").add(notification)
+            .addOnSuccessListener {
+                Log.d("BookAppClient2Fragment", "Notification added to Firestore")
+            }
+            .addOnFailureListener { e ->
+                Log.e("BookAppClient2Fragment", "Failed to add notification: ${e.message}")
+            }
     }
 }

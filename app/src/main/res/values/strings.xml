@@ -37,6 +37,7 @@
     <string name="username">Username:</string>
     <string name="new_password">New Password:</string>
     <string name="email">Email:</string>
+    <string name="appointments_for_selected_day">Appointments For Selected Day:</string>
 
 
 </resources>

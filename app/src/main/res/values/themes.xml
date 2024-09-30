@@ -18,7 +18,13 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+    <style name="CalendarDateTextAppearance">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
 
+    <style name="CalendarDateTextAppearanceHighlighted">
+        <item name="android:textColor">@android:color/holo_red_dark</item>
+    </style>
     <style name="Theme.OPSC7312PoEPart2Code.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.OPSC7312PoEPart2Code.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

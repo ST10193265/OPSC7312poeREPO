@@ -58,6 +58,7 @@ class BookAppClient1Fragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                Log.d(TAG, "Search Query: $newText") // Log the search query
                 listViewAdapter.filter.filter(newText)  // Filter dentists as user types
                 return false
             }
@@ -65,7 +66,7 @@ class BookAppClient1Fragment : Fragment() {
 
         // Handle ListView item click: navigate to BookAppClient2Fragment with selected dentist
         listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-            val selectedDentist = listViewAdapter.getItem(position)
+            val selectedDentist = listViewAdapter.getItem(position)  // Get the dentist from the filtered list
             Log.d(TAG, "Selected Dentist: $selectedDentist")  // Log the selected dentist
             if (selectedDentist != null) {
                 try {
@@ -105,7 +106,10 @@ class BookAppClient1Fragment : Fragment() {
                 dentistList.clear()  // Clear the list before adding new items
                 for (dentistSnapshot in snapshot.children) {
                     val dentistName = dentistSnapshot.child("name").getValue(String::class.java)
-                    dentistName?.let { dentistList.add(it) }  // Add the dentist to the list
+                    dentistName?.let {
+                        dentistList.add(it)  // Add the dentist to the list
+                        Log.d(TAG, "Fetched Dentist: $it") // Log each dentist fetched
+                    }
                 }
                 listViewAdapter.notifyDataSetChanged()  // Notify the adapter that the data has changed
             }

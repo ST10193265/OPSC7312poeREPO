@@ -88,6 +88,12 @@ This process of branching, committing, pushing, and pull requests helped maintai
 
 ##Screenshots
 Dentist Features:
+Book Appointment -
+![app - dentist](https://github.com/user-attachments/assets/bffd9531-3d67-4502-886a-2cd8adf09c08)
+
+Settings -
+![settings - dentist](https://github.com/user-attachments/assets/ecf8a254-600e-4880-8cec-10b03dded92a)
+
 
 Client Features:
 Book Appointment -

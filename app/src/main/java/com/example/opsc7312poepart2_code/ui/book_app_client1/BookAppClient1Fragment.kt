@@ -104,18 +104,13 @@ class BookAppClient1Fragment : Fragment() {
                 dentistList.clear()
                 for (dentistSnapshot in snapshot.children) {
                     val dentistName = dentistSnapshot.child("name").getValue(String::class.java)
-                    val dentistId = dentistSnapshot.key // Assuming the dentist ID is the key in Firebase
-                    dentistName?.let {
-                        if (dentistId != null) {
-                            dentistList.add("$dentistName:$dentistId") // Store both name and ID
-                        }
-                    }
+                    dentistName?.let { dentistList.add(it) }
                 }
                 listViewAdapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, "Database error: ${error.message}")
+                Log.e(TAG, "Database error: ${error.message}")  // Log any database errors
                 Toast.makeText(requireContext(), "Failed to load dentists.", Toast.LENGTH_SHORT).show()
             }
         })

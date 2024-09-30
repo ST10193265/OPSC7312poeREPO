@@ -9,7 +9,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.ListView
-import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -18,9 +17,9 @@ import com.google.firebase.database.*
 
 class BookAppClient1Fragment : Fragment() {
 
-    private lateinit var dentistList: ArrayList<String>
-    private lateinit var listViewAdapter: ArrayAdapter<String>
-    private lateinit var databaseReference: DatabaseReference
+    private lateinit var dentistList: ArrayList<String> // List to store dentist names
+    private lateinit var listViewAdapter: ArrayAdapter<String> // Adapter for the ListView
+    private lateinit var databaseReference: DatabaseReference // Firebase Database reference
 
     // Log tag for debugging
     private val TAG = "BookAppClient1Fragment"
@@ -32,8 +31,7 @@ class BookAppClient1Fragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_book_app_client1, container, false)
 
-        // Initialize the SearchView and ListView
-        val searchView = view.findViewById<SearchView>(R.id.searchbar)
+        // Initialize the ListView
         val listView = view.findViewById<ListView>(R.id.listofDentists)
 
         // Initialize ImageButtons
@@ -45,35 +43,24 @@ class BookAppClient1Fragment : Fragment() {
         listViewAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, dentistList)
         listView.adapter = listViewAdapter
 
-        // Set up Firebase database reference
+        // Set up Firebase database reference to dentists
         databaseReference = FirebaseDatabase.getInstance().getReference("dentists")
 
-        // Fetch dentists from Firebase
+        // Fetch dentists from Firebase and populate the ListView
         fetchDentists()
 
-        // Handle search functionality
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                listViewAdapter.filter.filter(newText)
-                return false
-            }
-        })
-
-        // Handle ListView item click to navigate to another screen
+        // Handle ListView item click: navigate to BookAppClient2Fragment with selected dentist
         listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-            val selectedDentist = listViewAdapter.getItem(position)
-            Log.d(TAG, "Selected Dentist: $selectedDentist")  // Log selected dentist
-
-
-
+            val selectedDentist = listViewAdapter.getItem(position)  // Get the dentist from the list
+            Log.d(TAG, "Selected Dentist: $selectedDentist")  // Log the selected dentist
             if (selectedDentist != null) {
                 try {
-                    findNavController().navigate(R.id.action_nav_book_app_client1_to_nav_book_app_client2)
-
+                    // Create a Bundle to pass the selected dentist's name to the next fragment
+                    val bundle = Bundle().apply {
+                        putString("selectedDentist", selectedDentist)
+                    }
+                    // Navigate to BookAppClient2Fragment and pass the selected dentist's name
+                    findNavController().navigate(R.id.action_nav_book_app_client1_to_nav_book_app_client2, bundle)
 
                 } catch (e: Exception) {
                     Log.e(TAG, "Navigation error: ${e.message}")  // Log any navigation errors
@@ -87,10 +74,11 @@ class BookAppClient1Fragment : Fragment() {
 
         // Set click listeners for the buttons
         ibtnMaps.setOnClickListener {
-            Toast.makeText(requireContext(), "To be implemented.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Maps functionality to be implemented.", Toast.LENGTH_SHORT).show()
         }
 
         ibtnHome.setOnClickListener {
+            // Navigate back to the client menu
             findNavController().navigate(R.id.action_nav_book_app_client1_to_nav_menu_client)
         }
 
@@ -101,12 +89,15 @@ class BookAppClient1Fragment : Fragment() {
     private fun fetchDentists() {
         databaseReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                dentistList.clear()
+                dentistList.clear()  // Clear the list before adding new items
                 for (dentistSnapshot in snapshot.children) {
                     val dentistName = dentistSnapshot.child("name").getValue(String::class.java)
-                    dentistName?.let { dentistList.add(it) }
+                    dentistName?.let {
+                        dentistList.add(it)  // Add the dentist to the list
+                        Log.d(TAG, "Fetched Dentist: $it") // Log each dentist fetched
+                    }
                 }
-                listViewAdapter.notifyDataSetChanged()
+                listViewAdapter.notifyDataSetChanged()  // Notify the adapter that the data has changed
             }
 
             override fun onCancelled(error: DatabaseError) {

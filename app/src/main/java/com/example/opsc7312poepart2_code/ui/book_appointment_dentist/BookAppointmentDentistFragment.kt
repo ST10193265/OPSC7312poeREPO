@@ -26,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.text.ParseException
 import java.util.*
+
 class BookAppointmentDentistFragment : Fragment() {
 
     private lateinit var calendarView1: CalendarView // Calendar view for selecting appointment dates

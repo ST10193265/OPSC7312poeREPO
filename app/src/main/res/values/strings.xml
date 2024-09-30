@@ -38,4 +38,9 @@
     <string name="new_password">New Password:</string>
     <string name="email">Email:</string>
 
+    // strings for book appointments
+    <string name="appointments">Book Appointment:</string>
+    <string name="date">Please select a date:</string>
+    <string name="time">Available Time:</string>
+    <string name="description">Description:</string>
 </resources>

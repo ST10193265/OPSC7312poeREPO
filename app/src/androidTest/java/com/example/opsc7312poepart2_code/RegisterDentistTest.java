@@ -8,9 +8,6 @@ import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertEquals;
 
-import android.text.InputType;
-import android.widget.EditText;
-
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.navigation.Navigation;
 import androidx.navigation.testing.TestNavHostController;
@@ -52,7 +49,7 @@ public class RegisterDentistTest {
         // Set the NavController for the fragment
         fragmentScenario.onFragment(fragment -> {
             Navigation.setViewNavController(fragment.requireView(), navController);
-            // Mock Firebase database
+            // Mock Firebase database reference
             dbReference = FirebaseDatabase.getInstance().getReference("dentists");
         });
     }
@@ -70,6 +67,7 @@ public class RegisterDentistTest {
         // Click the register button
         onView(withId(R.id.btnRegister)).perform(click());
 
+        // Add a delay to wait for the registration process to complete
         try {
             Thread.sleep(2000); // Wait for the registration process to complete
         } catch (InterruptedException e) {
@@ -85,7 +83,7 @@ public class RegisterDentistTest {
 
     @Test
     public void testRegistrationWithEmptyFields() {
-        // Click the register button without entering credentials
+        // Click the register button without entering any details
         onView(withId(R.id.btnRegister)).perform(click());
 
         // Verify that the user remains on the registration screen

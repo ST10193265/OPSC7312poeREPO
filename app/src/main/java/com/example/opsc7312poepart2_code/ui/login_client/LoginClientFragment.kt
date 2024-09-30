@@ -1,6 +1,5 @@
 package com.example.opsc7312poepart2_code.ui.login_client
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -9,7 +8,6 @@ import android.text.InputType
 import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -17,7 +15,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.poe2.R
 import com.example.poe2.databinding.FragmentLoginClientBinding
-import com.example.poe2.ui.menu_client.MenuClientFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -41,6 +38,8 @@ class LoginClientFragment : Fragment() {
 
     private val RC_SIGN_IN = 9001
     private lateinit var mGoogleSignInClient: com.google.android.gms.auth.api.signin.GoogleSignInClient
+    // the code above was taken form GeeksForGeeks.
+    // https://www.geeksforgeeks.org/google-signing-using-firebase-authentication-in-kotlin/
 
     private var passwordVisible = false // Password visibility state
 
@@ -60,7 +59,7 @@ class LoginClientFragment : Fragment() {
         dbReference = database.getReference("clients")
         auth = FirebaseAuth.getInstance()
 
-        // Initialize SharedPreferences
+        // Initialize SharedPreferences for login status
         sharedPreferences = requireActivity().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE)
 
         // Handle login button click
@@ -101,16 +100,18 @@ class LoginClientFragment : Fragment() {
             signIn()
         }
 
-
         return root
     }
 
-
+    // Initiate Google Sign-In
     private fun signIn() {
         val signInIntent = mGoogleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
+    // the code above was taken form GeeksForGeeks.
+    // https://www.geeksforgeeks.org/google-signing-using-firebase-authentication-in-kotlin/
 
+    // Handle the result of Google Sign-In
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_SIGN_IN) {
@@ -124,20 +125,15 @@ class LoginClientFragment : Fragment() {
             } catch (e: ApiException) {
                 // Handle sign-in failure
                 Toast.makeText(requireContext(), "Sign-in failed: ${e.statusCode}", Toast.LENGTH_SHORT).show()
+                Log.e("LoginClientFragment", "Sign-in failed: ${e.statusCode}")
             }
         }
     }
+    // the code above was taken form GeeksForGeeks.
+    // https://www.geeksforgeeks.org/google-signing-using-firebase-authentication-in-kotlin/
 
-    fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == R.id.sign_in_button) {
-            val signInIntent = mGoogleSignInClient.signInIntent
-            startActivityForResult(signInIntent, RC_SIGN_IN)
-            return true
-        }
-        return false
-    }
 
+    // Navigate to the Forget Password Fragment
     fun onForgotPasswordClicked(view: View) {
         findNavController().navigate(R.id.action_nav_login_client_to_nav_forget_password_client)
     }
@@ -147,6 +143,7 @@ class LoginClientFragment : Fragment() {
         _binding = null
     }
 
+    // Authenticate the user
     private fun loginUser(username: String, password: String) {
         dbReference.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -155,13 +152,16 @@ class LoginClientFragment : Fragment() {
                     val storedHashedPassword = userSnapshot.child("password").getValue(String::class.java) ?: ""
                     val storedSalt = userSnapshot.child("salt").getValue(String::class.java)?.let { Base64.decode(it, Base64.DEFAULT) } ?: ByteArray(0)
 
+                    // Hash the entered password
                     val hashedPassword = hashPassword(password, storedSalt)
 
+                    // Compare hashed password with the stored password
                     if (hashedPassword == storedHashedPassword) {
                         loggedInClientUsername = username
                         getUserIdFromFirebase(username)
                         saveLoginStatus()
                         Toast.makeText(requireContext(), "Login successful!", Toast.LENGTH_SHORT).show()
+                        clearFields()
                         findNavController().navigate(R.id.action_nav_login_client_to_nav_menu_client)
                     } else {
                         Toast.makeText(requireContext(), "Incorrect password.", Toast.LENGTH_SHORT).show()
@@ -173,17 +173,25 @@ class LoginClientFragment : Fragment() {
 
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                Log.e("LoginClientFragment", "Database error: ${error.message}")
             }
         })
     }
 
+    private fun clearFields() {
+        binding.etxtUsername.text.clear()
+        binding.etxtPassword.text.clear()
+        Log.d("LoginClientFragment", "Cleared input fields")
+    }
+
+    // Retrieve the user ID from Firebase
     private fun getUserIdFromFirebase(username: String) {
         dbReference.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     val userSnapshot = snapshot.children.first()
                     loggedInClientUserId = userSnapshot.key
-                    Log.e("LoginClientFragment", "loggedInClientUserId: $loggedInClientUserId")
+                    Log.d("LoginClientFragment", "loggedInClientUserId: $loggedInClientUserId")
                 } else {
                     Toast.makeText(requireContext(), "User ID not found.", Toast.LENGTH_SHORT).show()
                 }
@@ -191,33 +199,36 @@ class LoginClientFragment : Fragment() {
 
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(requireContext(), "Error retrieving user ID: ${error.message}", Toast.LENGTH_SHORT).show()
+                Log.e("LoginClientFragment", "Error retrieving user ID: ${error.message}")
             }
         })
     }
 
+    // Hash the password with the provided salt
     private fun hashPassword(password: String, salt: ByteArray): String {
         val digest = MessageDigest.getInstance("SHA-256")
         digest.update(salt)
         return Base64.encodeToString(digest.digest(password.toByteArray()), Base64.DEFAULT)
     }
+    // the code above was taken and adpated from Hyperskill
+    // https://hyperskill.org/learn/step/36628
 
+    // Toggle the visibility of the password
     private fun togglePasswordVisibility() {
         passwordVisible = !passwordVisible
 
         if (passwordVisible) {
             binding.etxtPassword.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
             binding.iconViewPassword.setImageResource(R.drawable.visible_icon) // Replace with the appropriate icon
-        } else {
-            binding.etxtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-            binding.iconViewPassword.setImageResource(R.drawable.visible_icon) // Replace with the appropriate icon
         }
-
         binding.etxtPassword.setSelection(binding.etxtPassword.text.length)
     }
 
+    // Save the login status in SharedPreferences
     private fun saveLoginStatus() {
         val editor = sharedPreferences.edit()
         editor.putBoolean("isLoggedIn", true)
         editor.apply()
+        Log.d("LoginClientFragment", "Login status saved.")
     }
 }

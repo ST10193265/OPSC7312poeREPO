@@ -37,4 +37,11 @@
     <string name="new_password">New Password:</string>
     <string name="email">Email:</string>
 
+
+    <string name="appointments">Bespreek afspraak:</string>
+    <string name="date">Kies asseblief n datum:</string>
+    <string name="time">Beskikbare Tyd:</string>
+    <string name="description">Beskrywing:</string>
+
+
 </resources>

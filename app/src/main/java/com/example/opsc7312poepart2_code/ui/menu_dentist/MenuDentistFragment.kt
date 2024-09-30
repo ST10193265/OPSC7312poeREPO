@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
@@ -24,6 +25,13 @@ class MenuDentistFragment : Fragment() {
         val ibtnBookAppointment: ImageButton = view.findViewById(R.id.ibtnBookAppointment)
         val ibtnNotifications: ImageButton = view.findViewById(R.id.ibtnNotifications)
         val ibtnSettings: ImageButton = view.findViewById(R.id.ibtnSettings)
+        val ibtnLogout: Button = view.findViewById(R.id.btnLogOut)
+
+
+        ibtnLogout.setOnClickListener {
+            // Navigate to the BookAppointmentFragment using the NavController
+            findNavController().navigate(R.id.action_nav_menu_dentist_to_nav_login_dentist)
+        }
 
         // Set OnClickListener for the Book Appointment button
         ibtnBookAppointment.setOnClickListener {

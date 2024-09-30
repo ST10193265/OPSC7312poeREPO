@@ -17,7 +17,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(AndroidJUnit4.class)
+// Adapted from: Android Testing Documentation
+// Source URL: https://developer.android.com/training/testing
+// Contributors: Android Developers
+// Contributor Profile: https://developer.android.com/profile/u/0/AndroidDevelopers
+@RunWith(AndroidJUnit4.class) // Specifies that the tests should be run with the AndroidJUnit4 test runner
 public class SettingsDentistTest {
 
     private FragmentScenario<SettingsDentistFragment> fragmentScenario;
@@ -25,36 +29,34 @@ public class SettingsDentistTest {
 
     @Before
     public void setup() {
-        // Launch MainActivity
+        // Launch MainActivity and set up the navigation controller
         ActivityScenario<MainActivity> activityScenario = ActivityScenario.launch(MainActivity.class);
 
-        // Initialize TestNavHostController in the activity context
         activityScenario.onActivity(activity -> {
             navController = new TestNavHostController(activity);
-            navController.setGraph(R.navigation.mobile_navigation);
-            navController.setCurrentDestination(R.id.nav_settings_dentist); // Set the start destination
+            navController.setGraph(R.navigation.mobile_navigation); // Set the navigation graph
+            navController.setCurrentDestination(R.id.nav_settings_dentist); // Set the current destination
         });
 
-        // Launch the SettingsDentistFragment
+        // Launch the SettingsDentistFragment in a container
         fragmentScenario = FragmentScenario.launchInContainer(SettingsDentistFragment.class);
 
-        // Set the NavController for the fragment
         fragmentScenario.onFragment(fragment -> {
-            Navigation.setViewNavController(fragment.requireView(), navController);
+            Navigation.setViewNavController(fragment.requireView(), navController); // Set the navigation controller for the fragment
 
-            // Set initial values for the UI components
+            // Set initial values for the fragment's views
             fragment.getEtAddress().setText("123 Dentist Street");
             fragment.getEtPhoneD().setText("9876543210");
-            fragment.getSpinnerLanguageD().setSelection(0); // English
+            fragment.getSpinnerLanguageD().setSelection(0);
         });
     }
 
     @Test
     public void testSaveButton() {
-        // Click the save button in the fragment
+        // Perform click on the save button
         onView(withId(R.id.btnSaveD)).perform(click());
 
-        // Verify that the settings are saved and the user is navigated back
+        // Check if the current destination is still the settings dentist fragment
         fragmentScenario.onFragment(fragment -> {
             int expectedDestinationId = R.id.nav_settings_dentist;
             assertEquals(expectedDestinationId, navController.getCurrentDestination().getId());
@@ -63,10 +65,10 @@ public class SettingsDentistTest {
 
     @Test
     public void testCancelButton() {
-        // Click the cancel button in the fragment
+        // Perform click on the cancel button
         onView(withId(R.id.btnCancelD)).perform(click());
 
-        // Verify that the user is navigated back
+        // Check if the current destination is the menu dentist fragment
         fragmentScenario.onFragment(fragment -> {
             int expectedDestinationId = R.id.nav_menu_dentist;
             assertEquals(expectedDestinationId, navController.getCurrentDestination().getId());
@@ -75,10 +77,10 @@ public class SettingsDentistTest {
 
     @Test
     public void testClearFieldsOnCancel() {
-        // Simulate clicking the Cancel button
+        // Perform click on the cancel button
         onView(withId(R.id.btnCancelD)).perform(click());
 
-        // Verify that the fields are cleared after canceling
+        // Check if the fields are cleared
         fragmentScenario.onFragment(fragment -> {
             assertEquals("", fragment.getEtAddress().getText().toString());
             assertEquals("", fragment.getEtPhoneD().getText().toString());
@@ -88,14 +90,14 @@ public class SettingsDentistTest {
 
     @Test
     public void testLoadSettings() {
-        // Simulate loading settings (assuming you set this up in your test environment)
+        // Load the settings and check if the fields are set correctly
         fragmentScenario.onFragment(fragment -> {
-            fragment.loadLanguagePreference(); // Call this method directly to load settings for testing
+            fragment.loadLanguagePreference();
 
-            // Check if the fields are populated with correct test data
             assertEquals("123 Dentist Street", fragment.getEtAddress().getText().toString());
             assertEquals("9876543210", fragment.getEtPhoneD().getText().toString());
-            assertEquals(0, fragment.getSpinnerLanguageD().getSelectedItemPosition()); // English
+            assertEquals(0, fragment.getSpinnerLanguageD().getSelectedItemPosition());
         });
     }
 }
+

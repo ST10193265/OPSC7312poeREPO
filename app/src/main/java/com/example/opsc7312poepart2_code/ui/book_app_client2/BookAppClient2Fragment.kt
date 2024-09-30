@@ -51,7 +51,7 @@ class BookAppClient2Fragment : Fragment() {
         spinnerSlots.adapter = adapter
 
         // Firebase Database initialization
-        database = FirebaseDatabase.getInstance().getReference("book_appointment_client") // Change to the correct table name
+        database = FirebaseDatabase.getInstance().getReference("appointments") // Change to the correct table name
 
         btnDate.setOnClickListener{
             // Handle date selection

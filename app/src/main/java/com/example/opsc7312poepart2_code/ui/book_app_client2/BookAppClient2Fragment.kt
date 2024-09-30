@@ -67,8 +67,11 @@ class BookAppClient2Fragment : Fragment() {
 
             // Check if a date has been selected before booking
             if (selectedDate != null) {
+                val dentistId = "actualDentistId" // Replace with actual dentist ID logic
+                val userId = "actualUserId" // Replace with actual user ID logic
+
                 Log.d("BookAppClient2Fragment", "Booking appointment with: Dentist: $selectedDentist, Slot: $selectedSlot, Date: $selectedDate, Description: $description")
-                bookAppointment(selectedDentist ?: "", selectedSlot, selectedDate!!, description)
+                bookAppointment(selectedDentist ?: "", selectedSlot, selectedDate!!, description, dentistId, userId)
             } else {
                 Toast.makeText(requireContext(), "Please select a date.", Toast.LENGTH_SHORT).show()
             }
@@ -108,16 +111,19 @@ class BookAppClient2Fragment : Fragment() {
     }
 
     // Function to book the appointment and save to Firebase database
-    private fun bookAppointment(dentist: String, slot: String, date: String, description: String) {
+    private fun bookAppointment(dentist: String, slot: String, date: String, description: String, dentistId: String, userId: String) {
         // Generate a unique ID for each booking
         val bookingId = database.push().key
 
         if (bookingId != null) {
             val bookingDetails = mapOf(
-                "dentist" to dentist,      // Saving the selected dentist's name
-                "slot" to slot,            // Saving the selected time slot
-                "date" to date,            // Saving the selected date
-                "description" to description // Saving the description
+                "appointmentId" to bookingId,  // Unique ID for the appointment
+                "date" to date,                 // Saving the selected date
+                "dentist" to dentist,           // Saving the selected dentist's name
+                "dentistId" to dentistId,       // Use the actual dentist ID passed in
+                "description" to description,    // Saving the description
+                "slot" to slot,                 // Saving the selected time slot
+                "userId" to userId              // Use the actual user ID passed in
             )
 
             // Log the booking details before saving

@@ -92,6 +92,15 @@ Dentist Features:
 Client Features:
 Book Appointment -
 ![book App client](https://github.com/user-attachments/assets/c89f6d27-e33d-440f-a5d3-7431806d60af)
+Settings - 
+![settings - client](https://github.com/user-attachments/assets/2838137c-03a3-4f71-a199-4d1a8b24174d)
+Maps -
+![maps - client ](https://github.com/user-attachments/assets/1731fd5b-561b-4b1d-bd0c-07b8a3d2a386)
+Helathzone -
+![healthzone](https://github.com/user-attachments/assets/49cdad5b-f59b-4d4f-9906-330d1f2b81f6)
+
+
+
 
 
 

@@ -135,4 +135,6 @@ dependencies {
     androidTestImplementation(libs.junit.junit)
     androidTestImplementation(libs.junit.junit)
 
+    implementation ("com.applandeo:material-calendar-view:1.9.2°")
+
 }

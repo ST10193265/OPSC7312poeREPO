@@ -26,6 +26,8 @@ class ForgetPasswordClientFragment : Fragment() {
 
     private lateinit var database: FirebaseDatabase
     private lateinit var dbReference: DatabaseReference
+    // refrence the Firebase database
+
 
     private var passwordVisible = false // Password visibility state
 
@@ -53,12 +55,6 @@ class ForgetPasswordClientFragment : Fragment() {
             }
         }
 
-        binding.btnCancel.setOnClickListener {
-            // Handle cancel button click
-            // Navigate back or close the fragment
-            requireActivity().onBackPressed()
-        }
-
         // Set the password field to not visible by default
         binding.etxtNewPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
 
@@ -77,6 +73,7 @@ class ForgetPasswordClientFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
     private fun clearFields() {
         with(binding) {
             etxtEmail.text.clear()
@@ -84,8 +81,10 @@ class ForgetPasswordClientFragment : Fragment() {
             etxtNewPassword.text.clear()
         }
     }
+    // this method clears all the fields
 
-    // Ensure this method is public
+
+
     fun togglePasswordVisibility(view: View) {
         passwordVisible = !passwordVisible
 
@@ -93,13 +92,10 @@ class ForgetPasswordClientFragment : Fragment() {
             binding.etxtNewPassword.inputType = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
             binding.iconViewPassword.setImageResource(R.drawable.visible_icon)
         }
-//        else {
-//            binding.etxtPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-//            binding.iconViewPassword.setImageResource(R.drawable.hidden_icon)
-//        }
 
         binding.etxtNewPassword.setSelection(binding.etxtNewPassword.text.length)
     }
+    // allows user to seee  their pawword when they click the icon
 
 
     private fun resetPassword(username: String, email: String, newPassword: String) {
@@ -113,7 +109,7 @@ class ForgetPasswordClientFragment : Fragment() {
                     if (storedEmail == email) {
                         // Hash and salt the new password
                         val newSalt = generateSalt()
-                        val hashedNewPassword = hashPassword(newPassword, newSalt)
+                        val hashedNewPassword = hashPassword(newPassword, newSalt) // hashes the new password before storing it
 
                         // Update the user's password and isPasswordUpdated field
                         userSnapshot.ref.child("password").setValue(hashedNewPassword)
@@ -136,18 +132,28 @@ class ForgetPasswordClientFragment : Fragment() {
             }
         })
     }
+    // this method saves the new password to the database
 
     private fun generateSalt(): ByteArray {
         val salt = ByteArray(16)
         SecureRandom().nextBytes(salt)
         return salt
     }
+    // this method salts the password
+    // the code above was taken and apapted from StackOverFlow
+    // https://stackoverflow.com/questions/78309846/javax-crypto-aeadbadtagexception-bad-decrypt-in-aes256-decryption
+    // Jagar
+    // https://stackoverflow.com/users/12053756/jagar
+
 
     private fun hashPassword(password: String, salt: ByteArray): String {
         val digest = MessageDigest.getInstance("SHA-256")
         digest.update(salt)
         return Base64.encodeToString(digest.digest(password.toByteArray()), Base64.DEFAULT)
     }
+    // this method hashes the password
+    // the code above was taken and adpated from Hyperskill
+    // https://hyperskill.org/learn/step/36628
 
 
 }

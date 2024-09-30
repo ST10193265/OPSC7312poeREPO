@@ -53,10 +53,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.029" />
 
-
-
-    <!-- Radius EditText -->
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -176,5 +172,11 @@
         app:layout_constraintHorizontal_bias="0.041"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iLogo" />
+
+        <!-- Adapted from: Android FrameLayout Documentation -->
+        <!-- Source URL: https://developer.android.com/reference/android/widget/FrameLayout -->
+        <!-- Contributors: Android Developers -->
+        <!-- Contributor Profile: https://developer.android.com/profile/u/0/AndroidDevelopers -->
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

@@ -18,46 +18,50 @@ import com.example.poe2.MainActivity;
 import com.example.poe2.R;
 import com.example.poe2.ui.client_settings.ClientSettingsFragment;
 
-@RunWith(AndroidJUnit4.class)
+// Adapted from: Android Testing Documentation
+// Source URL: https://developer.android.com/training/testing
+// Contributors: Android Developers
+// Contributor Profile: https://developer.android.com/profile/u/0/AndroidDevelopers
+@RunWith(AndroidJUnit4.class)  // Specifies that this class will use the AndroidJUnit4 test runner
 public class ClientSettingsTest {
 
-    private FragmentScenario<ClientSettingsFragment> fragmentScenario;
-    private TestNavHostController navController;
+    private FragmentScenario<ClientSettingsFragment> fragmentScenario;  // Handles the lifecycle of the fragment in a testable way
+    private TestNavHostController navController;  // Mock navigation controller for testing fragment navigation
 
     @Before
     public void setup() {
-        // Launch MainActivity
+        // Launches the MainActivity in the test environment
         ActivityScenario<MainActivity> activityScenario = ActivityScenario.launch(MainActivity.class);
 
-        // Initialize TestNavHostController in the activity context
         activityScenario.onActivity(activity -> {
+            // Sets up a TestNavHostController with the app's navigation graph
             navController = new TestNavHostController(activity);
             navController.setGraph(R.navigation.mobile_navigation);
-            navController.setCurrentDestination(R.id.nav_settings_client); // Set the start destination
+            navController.setCurrentDestination(R.id.nav_settings_client);  // Sets the current destination to the Client Settings fragment
         });
 
-        // Launch the ClientSettingsFragment
+        // Launches the ClientSettingsFragment in isolation for testing
         fragmentScenario = FragmentScenario.launchInContainer(ClientSettingsFragment.class);
 
-        // Set the NavController for the fragment
         fragmentScenario.onFragment(fragment -> {
+            // Connects the fragment to the mock NavController
             Navigation.setViewNavController(fragment.requireView(), navController);
 
-            // Set initial values for the UI components
+            // Sets up the fragment's input fields with test data
             fragment.getEtEmail().setText("test@example.com");
             fragment.getEtPhone().setText("1234567890");
-            fragment.getSpinnerLanguage().setSelection(1); // Afrikaans
-            fragment.getSpinnerDistanceUnits().setSelection(0); // km
-            fragment.getSpinnerDistanceRadius().setSelection(0); // No Limit
+            fragment.getSpinnerLanguage().setSelection(1); // Select Afrikaans in language spinner
+            fragment.getSpinnerDistanceUnits().setSelection(0); // Select km in distance units spinner
+            fragment.getSpinnerDistanceRadius().setSelection(0); // Select 'No Limit' in distance radius spinner
         });
     }
 
     @Test
     public void testSaveButton() {
-        // Click the save button in the fragment
+        // Simulates a click on the Save button
         onView(withId(R.id.btnSave)).perform(click());
 
-        // Verify that the settings are saved and the user is navigated back
+        // Verifies that after clicking save, the NavController stays on the Client Settings destination
         fragmentScenario.onFragment(fragment -> {
             int expectedDestinationId = R.id.nav_settings_client;
             assertEquals(expectedDestinationId, navController.getCurrentDestination().getId());
@@ -66,10 +70,10 @@ public class ClientSettingsTest {
 
     @Test
     public void testCancelButton() {
-        // Click the cancel button in the fragment
+        // Simulates a click on the Cancel button
         onView(withId(R.id.btnCancel)).perform(click());
 
-        // Verify that the user is navigated back
+        // Verifies that after clicking cancel, the NavController navigates to the Client Menu destination
         fragmentScenario.onFragment(fragment -> {
             int expectedDestinationId = R.id.nav_menu_client;
             assertEquals(expectedDestinationId, navController.getCurrentDestination().getId());
@@ -78,31 +82,31 @@ public class ClientSettingsTest {
 
     @Test
     public void testClearFieldsOnCancel() {
-        // Simulate clicking the Cancel button
+        // Simulates a click on the Cancel button
         onView(withId(R.id.btnCancel)).perform(click());
 
-        // Verify that the fields are cleared after canceling
+        // Verifies that after clicking cancel, all input fields are cleared
         fragmentScenario.onFragment(fragment -> {
-            assertEquals("", fragment.getEtEmail().getText().toString());
-            assertEquals("", fragment.getEtPhone().getText().toString());
-            assertEquals(0, fragment.getSpinnerLanguage().getSelectedItemPosition());
-            assertEquals(0, fragment.getSpinnerDistanceUnits().getSelectedItemPosition());
-            assertEquals(0, fragment.getSpinnerDistanceRadius().getSelectedItemPosition());
+            assertEquals("", fragment.getEtEmail().getText().toString());  // Verifies email field is cleared
+            assertEquals("", fragment.getEtPhone().getText().toString());  // Verifies phone field is cleared
+            assertEquals(0, fragment.getSpinnerLanguage().getSelectedItemPosition());  // Verifies language spinner is reset
+            assertEquals(0, fragment.getSpinnerDistanceUnits().getSelectedItemPosition());  // Verifies distance units spinner is reset
+            assertEquals(0, fragment.getSpinnerDistanceRadius().getSelectedItemPosition());  // Verifies distance radius spinner is reset
         });
     }
 
     @Test
     public void testLoadSettings() {
-        // Simulate loading settings (assuming you set this up in your test environment)
+        // Calls the loadSettings() method on the fragment to load the settings
         fragmentScenario.onFragment(fragment -> {
-            fragment.loadSettings(); // Call this method directly to load settings for testing
+            fragment.loadSettings();  // Loads the pre-set test data for the settings
 
-            // Check if the fields are populated with correct test data
-            assertEquals("test@example.com", fragment.getEtEmail().getText().toString());
-            assertEquals("1234567890", fragment.getEtPhone().getText().toString());
-            assertEquals(1, fragment.getSpinnerLanguage().getSelectedItemPosition()); // Afrikaans
-            assertEquals(0, fragment.getSpinnerDistanceUnits().getSelectedItemPosition()); // km
-            assertEquals(0, fragment.getSpinnerDistanceRadius().getSelectedItemPosition()); // No Limit
+            // Verifies that the settings fields are populated with the expected values
+            assertEquals("test@example.com", fragment.getEtEmail().getText().toString());  // Verifies email field
+            assertEquals("1234567890", fragment.getEtPhone().getText().toString());  // Verifies phone field
+            assertEquals(1, fragment.getSpinnerLanguage().getSelectedItemPosition());  // Verifies language spinner
+            assertEquals(0, fragment.getSpinnerDistanceUnits().getSelectedItemPosition());  // Verifies distance units spinner
+            assertEquals(0, fragment.getSpinnerDistanceRadius().getSelectedItemPosition());  // Verifies distance radius spinner
         });
     }
 }

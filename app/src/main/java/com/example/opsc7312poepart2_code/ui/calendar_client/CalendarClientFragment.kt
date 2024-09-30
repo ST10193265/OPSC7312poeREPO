@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.poe2.R
 
@@ -22,7 +23,6 @@ class CalendarClientFragment : Fragment() {
 
         // Initialize the ImageButtons
         val ibtnHome: ImageButton = view.findViewById(R.id.ibtnHome)
-
         // Set OnClickListener for the Book Appointment button
         ibtnHome.setOnClickListener {
             // Navigate to the BookAppointmentFragment using the NavController

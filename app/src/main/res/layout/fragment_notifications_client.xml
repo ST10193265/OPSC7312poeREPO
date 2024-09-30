@@ -2,17 +2,15 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/notificationsListView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.notifications_client.NotificationsClientFragment">
 
 
-
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
 
 
         <ImageButton
@@ -70,6 +68,7 @@
             app:layout_constraintVertical_bias="0.292" />
 
         <ListView
+            android:id="@+id/notificationsListView"
             android:layout_width="356dp"
             android:layout_height="327dp"
             app:layout_constraintBottom_toBottomOf="parent"

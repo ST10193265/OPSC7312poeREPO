@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.poe2.R
 
@@ -41,7 +42,9 @@ class MenuDentistFragment : Fragment() {
         // Set OnClickListener for the Notifications button
         ibtnNotifications.setOnClickListener {
             // Navigate to the BookAppointmentFragment using the NavController
-            findNavController().navigate(R.id.action_nav_menu_dentist_to_nav_notifications_dentist)
+       //     findNavController().navigate(R.id.action_nav_menu_dentist_to_nav_notifications_dentist)
+            Toast.makeText(requireContext(), "TO BE IMPLEMENTED", Toast.LENGTH_SHORT).show()
+
         }
 
         // Set OnClickListener for the Notifications button

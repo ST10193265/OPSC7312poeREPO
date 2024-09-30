@@ -11,6 +11,7 @@ import android.widget.ListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.opsc7312poepart2_code.ui.login_client.LoginClientFragment.Companion.loggedInClientUserId
 import com.example.poe2.R
 import com.example.poe2.databinding.FragmentNotificationsClientBinding
 import com.google.firebase.database.DataSnapshot
@@ -18,7 +19,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.firestore.FirebaseFirestore
+
 
 class NotificationsClientFragment : Fragment() {
 
@@ -82,7 +83,7 @@ class NotificationsClientFragment : Fragment() {
     }
 
     private fun loadNotifications() {
-        val currentUserId = "user123" // Replace with the actual ID of the logged-in user
+        val currentUserId = loggedInClientUserId // Replace with the actual ID of the logged-in user
 
         // Listen for changes in the "appointments" table in Firebase Realtime Database
         database.addValueEventListener(object : ValueEventListener {

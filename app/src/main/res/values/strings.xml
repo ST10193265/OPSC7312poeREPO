@@ -33,6 +33,10 @@
     <string name="manage_appointments">Manage Appointments</string>
 
     <string name="webclientid" translatable="false">227493496295-l4ogpcg7ru66oeeikmtfhf1ab8gvsklu.apps.googleusercontent.com</string>
+    <string name="feature_to_be_implemented">FEATURE TO BE IMPLEMENTED</string>
+    <string name="username">Username:</string>
+    <string name="new_password">New Password:</string>
+    <string name="email">Email:</string>
 
 
 </resources>

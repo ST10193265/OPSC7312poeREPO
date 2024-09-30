@@ -32,5 +32,9 @@
     <string name="maps">Kaarte</string>
     <string name="health_zone">Gesondheid Sone</string>
     <string name="manage_appointments">Bestuur Afsprake</string>
+    <string name="feature_to_be_implemented">KENMERK WAT NOG GEIMPLEMENTEER MOET WORD</string>
+    <string name="username">Username:</string>
+    <string name="new_password">New Password:</string>
+    <string name="email">Email:</string>
 
 </resources>

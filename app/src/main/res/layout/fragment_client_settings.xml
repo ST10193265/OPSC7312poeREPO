@@ -92,8 +92,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spinnerLanguage" />
 
-        <!-- Email EditText -->
-
         <Spinner
             android:id="@+id/spinnerDistanceUnits"
             android:layout_width="324dp"
@@ -107,8 +105,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spinnerLanguage" />
 
-        <!-- Phone EditText -->
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -120,9 +116,6 @@
             app:layout_constraintHorizontal_bias="0.047"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spinnerDistanceUnits" />
-
-
-        <!-- Save and Cancel Buttons -->
 
         <Spinner
             android:id="@+id/spinnerDistanceRadius"
@@ -231,6 +224,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iLogo" />
 
+        <!-- Adapted from: Android FrameLayout Documentation -->
+        <!-- Source URL: https://developer.android.com/reference/android/widget/FrameLayout -->
+        <!-- Contributors: Android Developers -->
+        <!-- Contributor Profile: https://developer.android.com/profile/u/0/AndroidDevelopers -->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

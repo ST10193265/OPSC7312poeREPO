@@ -14,6 +14,7 @@ Navigate to Appointments using integrated directions within the app’s map feat
 Access the Health Zone, where they can find educational dental health videos and explanations of frequently asked questions, helping them better understand oral hygiene and common dental concerns.
 Manage Account Settings: Clients can change their personal details and update preferences through the app’s user-friendly settings page.
 Password Management: Clients can reveal passwords using an eye icon, retrieve forgotten passwords, and reset them by validating their username and email.
+
 For Dentists:
 Dental Diary offers a streamlined solution for dental practices to manage appointments and interact with patients effectively:
 
@@ -81,6 +82,7 @@ After resolving conflicts on GitHub, the changes were merged into the main branc
 5. Merging and Pulling Changes
 Once the pull request was approved and any conflicts were resolved, the feature branch was merged into the main branch. This was done directly on GitHub after the successful code review.
 After the merge, all team members would pull the latest changes from the main branch back into their local environments using Android Studio’s VCS. This ensured that everyone was working with the most up-to-date codebase.
+6. Automated Testing
 
 This process of branching, committing, pushing, and pull requests helped maintain a structured workflow and ensured that our team could work on the project collaboratively without disrupting each other's progress. By leveraging both Android Studio’s VCS integration and GitHub’s powerful code review and conflict resolution features, we were able to maintain a smooth development cycle, keep the codebase clean, and track changes efficiently.
 

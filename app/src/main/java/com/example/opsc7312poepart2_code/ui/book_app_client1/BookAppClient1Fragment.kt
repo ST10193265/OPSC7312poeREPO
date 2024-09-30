@@ -67,6 +67,9 @@ class BookAppClient1Fragment : Fragment() {
         listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
             val selectedDentist = listViewAdapter.getItem(position)
             Log.d(TAG, "Selected Dentist: $selectedDentist")  // Log selected dentist
+
+
+
             if (selectedDentist != null) {
                 try {
                     findNavController().navigate(R.id.action_nav_book_app_client1_to_nav_book_app_client2)
@@ -101,13 +104,18 @@ class BookAppClient1Fragment : Fragment() {
                 dentistList.clear()
                 for (dentistSnapshot in snapshot.children) {
                     val dentistName = dentistSnapshot.child("name").getValue(String::class.java)
-                    dentistName?.let { dentistList.add(it) }
+                    val dentistId = dentistSnapshot.key // Assuming the dentist ID is the key in Firebase
+                    dentistName?.let {
+                        if (dentistId != null) {
+                            dentistList.add("$dentistName:$dentistId") // Store both name and ID
+                        }
+                    }
                 }
                 listViewAdapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, "Database error: ${error.message}")  // Log any database errors
+                Log.e(TAG, "Database error: ${error.message}")
                 Toast.makeText(requireContext(), "Failed to load dentists.", Toast.LENGTH_SHORT).show()
             }
         })

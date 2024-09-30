@@ -13,6 +13,11 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.poe2.R
 import com.example.poe2.databinding.FragmentNotificationsClientBinding
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 
 class NotificationsClientFragment : Fragment() {
@@ -24,6 +29,7 @@ class NotificationsClientFragment : Fragment() {
     private lateinit var notificationsListView: ListView
     private lateinit var notificationsAdapter: ArrayAdapter<String>
     private val notificationsList = mutableListOf<String>()
+    private lateinit var database: DatabaseReference
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,8 +46,8 @@ class NotificationsClientFragment : Fragment() {
         btnViewNotifications = view.findViewById(R.id.btnViewNotifications)
         notificationsListView = view.findViewById(R.id.notificationsListView)
 
-        // Load notifications from Firestore
-        loadNotifications()
+        // Initialize Firebase Realtime Database reference to "appointments"
+        database = FirebaseDatabase.getInstance().getReference("appointments")
 
         // Initialize the ImageButtons
         val ibtnHome: ImageButton = binding.ibtnHome // Access ImageButton through binding
@@ -60,39 +66,40 @@ class NotificationsClientFragment : Fragment() {
     }
 
     private fun loadNotifications() {
-        val db = FirebaseFirestore.getInstance()
+        val currentUserId = "user123" // Replace with the actual ID of the logged-in user
 
-        // Listen for changes in the "appointments" collection
-        db.collection("appointments")
-            .addSnapshotListener { snapshots, e ->
-                if (e != null) {
-                    Toast.makeText(context, "Failed to load appointments: ${e.message}", Toast.LENGTH_SHORT).show()
-                    return@addSnapshotListener
-                }
+        // Listen for changes in the "appointments" table in Firebase Realtime Database
+        database.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                notificationsList.clear()
 
-                if (snapshots != null) {
-                    notificationsList.clear()
+                // Loop through each child in the snapshot (appointments)
+                for (appointmentSnapshot in snapshot.children) {
+                    val dentist = appointmentSnapshot.child("dentist").getValue(String::class.java) ?: "Unknown Dentist"
+                    val slot = appointmentSnapshot.child("slot").getValue(String::class.java) ?: "Unknown Slot"
+                    val date = appointmentSnapshot.child("date").getValue(String::class.java) ?: "Unknown Date"
+                    val description = appointmentSnapshot.child("description").getValue(String::class.java) ?: "No Description"
+                    val userId = appointmentSnapshot.child("userId").getValue(String::class.java) ?: ""
 
-                    // Loop through the snapshots (appointments)
-                    for (document in snapshots) {
-                        val dentist = document.getString("dentist") ?: "Unknown Dentist"
-                        val slot = document.getString("slot") ?: "Unknown Slot"
-                        val date = document.getString("date") ?: "Unknown Date"
-                        val description = document.getString("description") ?: "No Description"
-
+                    // Check if the appointment belongs to the logged-in user
+                    if (userId == currentUserId) {
                         // Format the notification message
                         val notificationMessage = "Appointment with $dentist on $date at $slot: $description"
 
                         // Add the notification message to the list
                         notificationsList.add(notificationMessage)
                     }
-
-                    // Notify the adapter that the data has changed
-                    notificationsAdapter.notifyDataSetChanged()
-                } else {
-                    Toast.makeText(context, "No appointments found.", Toast.LENGTH_SHORT).show()
                 }
+
+                // Notify the adapter that the data has changed
+                notificationsAdapter.notifyDataSetChanged()
             }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle potential errors
+                Toast.makeText(context, "Failed to load appointments: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     override fun onDestroyView() {

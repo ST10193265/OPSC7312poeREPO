@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import com.example.poe2.R
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
@@ -26,6 +27,7 @@ class BookAppClient2Fragment : Fragment() {
     private lateinit var database: DatabaseReference
 
     private var selectedDate: String? = null // Variable to store the selected date
+    private var dentist: String? = null // Declare a variable for dentist
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,7 +53,7 @@ class BookAppClient2Fragment : Fragment() {
         spinnerSlots.adapter = adapter
 
         // Firebase Database initialization
-        database = FirebaseDatabase.getInstance().getReference("book_appointment_client") // Change to the correct table name
+        database = FirebaseDatabase.getInstance().getReference("appointments") // Change to the correct table name
 
         btnDate.setOnClickListener{
             // Handle date selection
@@ -67,14 +69,22 @@ class BookAppClient2Fragment : Fragment() {
 
             // Check if a date has been selected before booking
             if (selectedDate != null) {
-                Log.d("BookAppClient2Fragment", "Booking appointment with: Dentist: $selectedDentist, Slot: $selectedSlot, Date: $selectedDate, Description: $description")
-                bookAppointment(selectedDentist ?: "", selectedSlot, selectedDate!!, description)
+                val userId = getUserId() // Get the actual user ID
+                val dentistId = arguments?.getString("dentistId") // Get the dentist ID from the arguments
+
+                Log.d("BookAppClient2Fragment", "Booking appointment with: Dentist: $dentist, Slot: $selectedSlot, Date: $selectedDate, Description: $description")
+                bookAppointment(dentist ?: "", selectedSlot, selectedDate!!, description, dentistId ?: "", userId) // Pass dentistId and userId
             } else {
                 Toast.makeText(requireContext(), "Please select a date.", Toast.LENGTH_SHORT).show()
             }
         }
 
         return view
+    }
+
+    private fun getUserId(): String {
+        val user = FirebaseAuth.getInstance().currentUser
+        return user?.uid ?: "Unknown User" // Replace with actual handling if user is null
     }
 
     // Function to generate time slots from startHour to endHour
@@ -108,16 +118,19 @@ class BookAppClient2Fragment : Fragment() {
     }
 
     // Function to book the appointment and save to Firebase database
-    private fun bookAppointment(dentist: String, slot: String, date: String, description: String) {
+    private fun bookAppointment(dentist: String, slot: String, date: String, description: String, dentistId: String, userId: String) {
         // Generate a unique ID for each booking
         val bookingId = database.push().key
 
         if (bookingId != null) {
             val bookingDetails = mapOf(
-                "dentist" to dentist,      // Saving the selected dentist's name
-                "slot" to slot,            // Saving the selected time slot
-                "date" to date,            // Saving the selected date
-                "description" to description // Saving the description
+                "appointmentId" to bookingId,  // Unique ID for the appointment
+                "date" to date,                 // Saving the selected date
+                "dentist" to dentist,           // Saving the selected dentist's name
+                "dentistId" to dentistId,       // Use the actual dentist ID passed in
+                "description" to description,    // Saving the description
+                "slot" to slot,                 // Saving the selected time slot
+                "userId" to userId              // Use the actual user ID passed in
             )
 
             // Log the booking details before saving

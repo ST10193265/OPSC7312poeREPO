@@ -8,17 +8,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.CalendarView
 import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
-import com.applandeo.materialcalendarview.EventDay
-import com.applandeo.materialcalendarview.listeners.OnDayClickListener
+import com.applandeo.materialcalendarview.CalendarView
 import com.example.poe2.R
 import java.text.SimpleDateFormat
 import java.util.Locale
-
+import com.applandeo.materialcalendarview.EventDay
+import com.applandeo.materialcalendarview.listeners.OnDayClickListener
 import com.example.opsc7312poepart2_code.ui.login_dentist.LoginDentistFragment.Companion.loggedInDentistUserId
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -27,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.text.ParseException
 import java.util.*
+
 class BookAppointmentDentistFragment : Fragment() {
 
     private lateinit var calendarView1: CalendarView // Calendar view for selecting appointment dates

@@ -105,6 +105,10 @@
             app:destination="@id/nav_settings_client"
             app:popUpTo="@id/nav_menu_client" />
 
+
+        <action
+            android:id="@+id/action_nav_menu_client_to_nav_login_client1"
+            app:destination="@id/nav_login_client" />
         <action
             android:id="@+id/action_nav_menu_client_to_nav_book_app_client1"
             app:destination="@id/nav_book_app_client1" />
@@ -148,6 +152,8 @@
         <action
             android:id="@+id/action_nav_book_app_client1_to_nav_book_app_client2"
             app:destination="@id/nav_book_app_client2" />
+
+
     </fragment>
 
     <fragment
@@ -155,6 +161,9 @@
         android:name="com.example.opsc7312poepart2_code.ui.book_app_client2.BookAppClient2Fragment"
         android:label="Menu - Book Appointment"
         tools:layout="@layout/fragment_book_app_client2" >
+        <action
+            android:id="@+id/action_nav_book_app_client2_to_nav_menu_client"
+            app:destination="@id/nav_menu_client" />
 
     </fragment>
 
@@ -203,6 +212,10 @@
         android:name="com.example.poe2.ui.menu_dentist.MenuDentistFragment"
         android:label="Menu - Dentist"
         tools:layout="@layout/fragment_menu_dentist" >
+
+        <action
+            android:id="@+id/action_nav_menu_dentist_to_nav_login_dentist"
+            app:destination="@id/nav_login_dentist" />
 
         <action
             android:id="@+id/action_nav_menu_dentist_to_nav_notifications_dentist"

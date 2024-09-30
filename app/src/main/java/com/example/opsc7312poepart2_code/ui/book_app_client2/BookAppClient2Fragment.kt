@@ -21,6 +21,7 @@ class BookAppClient2Fragment : Fragment() {
     private lateinit var editTextDescription: EditText
     private lateinit var btnBook: Button
     private lateinit var btnDate: Button
+    private lateinit var btnCancel: Button
     private lateinit var btnHome: ImageButton
 
     private lateinit var database: DatabaseReference
@@ -41,6 +42,7 @@ class BookAppClient2Fragment : Fragment() {
         editTextDescription = view.findViewById(R.id.etxtDescription)
         btnBook = view.findViewById(R.id.btnBook)
         btnDate = view.findViewById(R.id.btnDate)
+        btnCancel = view.findViewById(R.id.btnCancel)
         btnHome = view.findViewById(R.id.ibtnHome)
 
         // Firebase Database initialization
@@ -62,9 +64,15 @@ class BookAppClient2Fragment : Fragment() {
             showDatePicker()
         }
 
+        btnCancel.setOnClickListener {
+          // clears all the fields
+            clearInputs()
+        }
+
+
         btnHome.setOnClickListener {
             // Navigate back to home (uncomment to enable)
-            // findNavController().navigate(R.id.action_bookAppClient2Fragment_to_homeFragment)
+            findNavController().navigate(R.id.action_nav_book_app_client2_to_nav_menu_client)
         }
 
         // Handle book button click
@@ -100,6 +108,15 @@ class BookAppClient2Fragment : Fragment() {
             }
         }
         return slots
+    }
+
+    // Method to clear and reset the spinner and inputs
+    private fun clearInputs() {
+        spinnerSlots.setSelection(0) // Reset spinner to first item
+        txtSelectedDentist.text = "" // Clear dentist text
+        editTextDescription.text.clear() // Clear description text
+        selectedDate = null // Reset selected date
+        Log.d("BookAppClient2Fragment", "Inputs cleared.")
     }
 
     // Function to show a date picker dialog
@@ -169,6 +186,7 @@ class BookAppClient2Fragment : Fragment() {
             database.child(appointmentId).setValue(bookingDetails)
                 .addOnSuccessListener {
                     Toast.makeText(requireContext(), "Appointment booked successfully!", Toast.LENGTH_SHORT).show()
+                    clearInputs()
                 }
                 .addOnFailureListener { error ->
                     Log.e("BookAppClient2Fragment", "Failed to book appointment: ${error.message}")

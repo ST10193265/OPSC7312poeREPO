@@ -2,8 +2,6 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("com.google.gms.google-services")
-
-
 }
 
 android {
@@ -29,6 +27,7 @@ android {
             )
         }
     }
+
     testOptions {
         unitTests.isIncludeAndroidResources = true
     }
@@ -74,6 +73,7 @@ android {
 
         // Utilities
         implementation(libs.android.maps.utils)
+
 // AndroidX Test dependencies
 androidTestImplementation ("androidx.test.ext:junit:1.1.5")
 androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
@@ -114,6 +114,8 @@ implementation ("com.google.android.gms:play-services-auth:18.0.0")
 // Using the new versioning system (optional)
 androidTestImplementation(libs.androidx.junit.v115) // If you're using Gradle version catalogs
 androidTestImplementation(libs.androidx.espresso.core.v351)
+// Material CalendarView
+implementation ("com.applandeo:material-calendar-view:1.9.2")
 
 
 
@@ -121,8 +123,9 @@ androidTestImplementation(libs.androidx.espresso.core.v351)
 
 }
 dependencies {
+
     implementation(libs.places)
-    implementation(libs.androidx.legacy.support.v4)
+
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.fragment.ktx)
@@ -131,9 +134,4 @@ dependencies {
     androidTestImplementation(libs.junit.junit)
     androidTestImplementation(libs.junit.junit)
 
-
-
 }
-
-
-

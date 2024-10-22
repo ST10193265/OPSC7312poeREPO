@@ -1,6 +1,7 @@
 package com.example.poe2.ui.notifications_client
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,10 @@ import android.widget.ListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.opsc7312poepart2_code.ui.ApiClient
+import com.example.opsc7312poepart2_code.ui.ApiResponse
+import com.example.opsc7312poepart2_code.ui.ApiService
+import com.example.opsc7312poepart2_code.ui.Notification
 import com.example.opsc7312poepart2_code.ui.login_client.LoginClientFragment.Companion.loggedInClientUserId
 import com.example.poe2.R
 import com.example.poe2.databinding.FragmentNotificationsClientBinding
@@ -19,25 +24,13 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-
+import com.google.gson.Gson
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class NotificationsClientFragment : Fragment() {
-
-    /*
-    * Code attributions:
-    *
-    * Auther: freeCodeCamp.org; Python API Development - Comprehensive Course for Beginners: link- https://youtu.be/0sOvCWFmrtA
-    * Auther: Phillipp Lackner; Local Notifications in Android - The Full Guide (Android Studio Tutorial) : link - https://youtu.be/LP623htmWcI
-    * Auther: Code With Cal; Daily Calendar View Android Studio Tutorial : link - https://youtu.be/Aig99t-gNqM
-    * Auther: Foxandroid; How to Add SearchView in Android App using Kotlin | SearchView | Kotlin | Android studio : link - https://youtu.be/oE8nZRJ9vxA
-    *
-    * AI Tools
-    * Gemini
-    * ChatGpt
-    * Amazon Q
-    * CoPilot
-    *
-    * */
 
     private var _binding: FragmentNotificationsClientBinding? = null
     private val binding get() = _binding!!
@@ -46,7 +39,6 @@ class NotificationsClientFragment : Fragment() {
     private lateinit var notificationsListView: ListView
     private lateinit var notificationsAdapter: ArrayAdapter<String>
     private val notificationsList = mutableListOf<String>()
-    private lateinit var database: DatabaseReference
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,16 +55,13 @@ class NotificationsClientFragment : Fragment() {
         btnViewNotifications = view.findViewById(R.id.btnViewNotifications)
         notificationsListView = view.findViewById(R.id.notificationsListView)
 
-        // Initialize Firebase Realtime Database reference to "appointments"
-        database = FirebaseDatabase.getInstance().getReference("appointments")
-
-        // Initialize the ImageButtons
-        val ibtnHome: ImageButton = binding.ibtnHome // Access ImageButton through binding
-
         // Set up the button click listener
         btnViewNotifications.setOnClickListener {
             loadNotifications()
         }
+
+        // Initialize the ImageButtons
+        val ibtnHome: ImageButton = binding.ibtnHome // Access ImageButton through binding
 
         // Set OnClickListener for the Home button
         ibtnHome.setOnClickListener {
@@ -83,38 +72,47 @@ class NotificationsClientFragment : Fragment() {
     }
 
     private fun loadNotifications() {
+        // Assuming you have the logged-in user's ID stored
         val currentUserId = loggedInClientUserId // Replace with the actual ID of the logged-in user
 
-        // Listen for changes in the "appointments" table in Firebase Realtime Database
-        database.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                notificationsList.clear()
+        // Create a Retrofit instance
+        val apiService = ApiClient.client?.create(ApiService::class.java)
 
-                // Loop through each child in the snapshot (appointments)
-                for (appointmentSnapshot in snapshot.children) {
-                    val dentist = appointmentSnapshot.child("dentist").getValue(String::class.java) ?: "Unknown Dentist"
-                    val slot = appointmentSnapshot.child("slot").getValue(String::class.java) ?: "Unknown Slot"
-                    val date = appointmentSnapshot.child("date").getValue(String::class.java) ?: "Unknown Date"
-                    val description = appointmentSnapshot.child("description").getValue(String::class.java) ?: "No Description"
-                    val userId = appointmentSnapshot.child("userId").getValue(String::class.java) ?: ""
+        // Make a network call to get notifications
+        apiService?.getPatientNotifications()?.enqueue(object : Callback<ApiResponse> {
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                Log.d("NotificationsClientFragment", "Response Code: ${response.code()}") // Log response code
+                if (response.isSuccessful) {
+                    response.body()?.let { apiResponse ->
+                        Log.d("NotificationsClientFragment", "API Response: $apiResponse") // Log the API response
+                        if (apiResponse.success) { // Assuming ApiResponse has a 'success' field
+                            // Add notifications to the list
+                            notificationsList.clear()
+                            notificationsList.addAll(apiResponse.data.map { it.message }) // Assuming Notification class has a 'message' field
 
-                    // Check if the appointment belongs to the logged-in user
-                    if (userId == currentUserId) {
-                        // Format the notification message
-                        val notificationMessage = "Appointment with $dentist on $date at $slot: $description"
+                            // Notify the adapter that the data has changed
+                            notificationsAdapter.notifyDataSetChanged()
 
-                        // Add the notification message to the list
-                        notificationsList.add(notificationMessage)
+                            // Check if there are no notifications
+                            if (notificationsList.isEmpty()) {
+                                Toast.makeText(context, "No notifications available", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            Toast.makeText(context, "No notifications available", Toast.LENGTH_SHORT).show()
+                        }
+                    } ?: run {
+                        Log.d("NotificationsClientFragment", "Response body is null")
+                        Toast.makeText(context, "No notifications available", Toast.LENGTH_SHORT).show()
                     }
+                } else {
+                    Log.e("NotificationsClientFragment", "Failed to load notifications: ${response.message()}") // Log error message
+                    Toast.makeText(context, "Failed to load notifications: ${response.message()}", Toast.LENGTH_SHORT).show()
                 }
-
-                // Notify the adapter that the data has changed
-                notificationsAdapter.notifyDataSetChanged()
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                // Handle potential errors
-                Toast.makeText(context, "Failed to load appointments: ${error.message}", Toast.LENGTH_SHORT).show()
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.e("NotificationsClientFragment", "Error: ${t.message}") // Log error
+                Toast.makeText(context, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -124,3 +122,4 @@ class NotificationsClientFragment : Fragment() {
         _binding = null // Clear the binding reference to avoid memory leaks
     }
 }
+

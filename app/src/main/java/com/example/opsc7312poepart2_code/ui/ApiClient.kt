@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 object ApiClient {
-    private const val BASE_URL = "https://us-central1-opsc7312database.cloudfunctions.net/api"
+    private const val BASE_URL = "https://us-central1-opsc7312database.cloudfunctions.net/api/"
     private var retrofit: Retrofit? = null
 
     val client: Retrofit?

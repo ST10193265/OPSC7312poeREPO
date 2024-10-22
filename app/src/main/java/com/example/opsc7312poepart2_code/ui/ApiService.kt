@@ -31,8 +31,8 @@ interface ApiService {
     fun approveAppointment(@Path("appointmentId") appointmentId: String?): Call<ResponseBody?>?
 
     // Route for patient notifications
-    @GET("notifications/patient")
-    fun getPatientNotifications(): Call<ResponseBody?>?
+    @GET("api/appointments/notifications/patient")
+    fun getPatientNotifications(): Call<ApiResponse>
 
     // Route for staff notifications
     @GET("notifications/staff")
@@ -89,13 +89,17 @@ data class Credentials(
 )
 
 data class Notification(
-    val id: String,
+    val appointmentId: String,
     val message: String,
-    val date: String // Consider using a Date type
+    val date: String,
+    val time: String,
+    val description: String,
+    val status: String
 )
+
 
 data class ApiResponse(
     val success: Boolean,
-    val message: String,
-    val data: Any? // This can hold any type of response data
+    val data: List<Notification>
 )
+
